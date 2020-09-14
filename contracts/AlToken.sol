@@ -129,18 +129,6 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
       lendingPool.distributor().alphaToken().approve(address(vestingAlpha), pending);
       vestingAlpha.accumulateAlphaToUser(_account, pending);
     }
-    setLatestAlphaMultiplier(_account);
-  }
-
-  /**
-   * @dev set the latest alpha multiplier of the user account
-   * @param _account the user account address
-   */
-  function setLatestAlphaMultiplier(address _account) internal {
-    // No op if alpha distributor didn't be set in lending pool.
-    if (address(lendingPool.distributor()) == address(0)) {
-      return;
-    }
     latestAlphaMultiplier[_account] = alphaMultiplier;
   }
 
@@ -162,7 +150,5 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
     claimCurrentAlphaReward(_to);
     super._transfer(_from, _to, _amount);
     require(lendingPool.isAccountHealthy(_from), "Transfer tokens is not allowed");
-    setLatestAlphaMultiplier(_from);
-    setLatestAlphaMultiplier(_to);
   }
 }

@@ -718,16 +718,24 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
     updateAlphaReward
   {
     Pool storage pool = pools[address(_token)];
+    UserPoolData storage userData = userPoolData[msg.sender][address(_token)];
     require(pool.status == PoolStatus.ACTIVE, "can't deposit to this pool");
     require(_amount > 0, "deposit amount should more than 0");
 
     // 1. calculate liquidity share amount
     uint256 shareAmount = calculateRoundDownLiquidityShareAmount(_token, _amount);
 
-    // 2. mint alToken to user equal to liquidity share amount
+    // 2. enable use as collateral for the default, if this pool is enabled to use as collateral
+    bool isAllowToUseAsCollateral = pool.poolConfig.getCollateralPercent() != 0;
+    bool isFirstDeposit = pool.alToken.balanceOf(msg.sender) == 0;
+    if (isAllowToUseAsCollateral && isFirstDeposit) {
+      userData.useAsCollateral = true;
+    }
+
+    // 3. mint alToken to user equal to liquidity share amount
     pool.alToken.mint(msg.sender, shareAmount);
 
-    // 3. transfer user deposit liquidity to the pool
+    // 4. transfer user deposit liquidity to the pool
     _token.safeTransferFrom(msg.sender, address(this), _amount);
 
     emit Deposit(address(_token), msg.sender, shareAmount, _amount);

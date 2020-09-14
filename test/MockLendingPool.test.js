@@ -16,6 +16,12 @@ chai.use(require("chai-bignumber")(BigNumber));
 contract("MockLendingPool", (accounts) => {
   const [creator, alice, bob] = accounts;
 
+  const poolStatus = {
+    INACTIVE: BigNumber(0),
+    ACTIVE: BigNumber(1),
+    CLOSED: BigNumber(2),
+  };
+
   const BASE_BORROW_RATE = BigNumber(0.1).times(WAD); // 10%
   const SLOPE1_RATE = BigNumber(0.2).times(WAD); // 20%
   const SLOPE2_RATE = BigNumber(0.4).times(WAD); // 40%
@@ -1213,5 +1219,93 @@ contract("MockLendingPool", (accounts) => {
       lendingInstance.withdrawReserve(bnbToken.address, withdrawAmount, {from: bob}),
       "Ownable: caller is not the owner"
     );
+  });
+
+  it(`Should enable user use as collateral if it is the first deposit`, async () => {
+    const pool = {
+      tokenInstance: bnbToken,
+      totalAvailableLiquidity: BigNumber(200).times(WAD),
+      liquidityShares: BigNumber(100).times(WAD),
+      totalBorrows: BigNumber(150).times(WAD),
+      totalBorrowShares: BigNumber(100).times(WAD),
+    };
+
+    // mock total supply of alToken
+    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+    await lendingInstance.setPool(
+      pool.tokenInstance.address,
+      pool.totalBorrows,
+      pool.totalBorrowShares
+    );
+
+    await lendingInstance.setPoolStatus(pool.tokenInstance.address, poolStatus.ACTIVE);
+
+    const depositAmount = BigNumber(10).times(WAD);
+    await bnbToken.mint(alice, depositAmount);
+    await bnbToken.approve(lendingInstance.address, depositAmount, {from: alice});
+    await lendingInstance.deposit(bnbToken.address, BigNumber(10).times(WAD), {from: alice});
+    const userData = await lendingInstance.getUserPoolData(alice, bnbToken.address);
+    assert.equal(userData.userUsePoolAsCollateral, true);
+  });
+
+  it(`Shouldn't set use as collateral on the second deposit when user disable use as collateral after first deposit`, async () => {
+    const pool = {
+      tokenInstance: bnbToken,
+      totalAvailableLiquidity: BigNumber(200).times(WAD),
+      liquidityShares: BigNumber(100).times(WAD),
+      totalBorrows: BigNumber(150).times(WAD),
+      totalBorrowShares: BigNumber(100).times(WAD),
+    };
+
+    // mock total supply of alToken
+    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+    await lendingInstance.setPool(
+      pool.tokenInstance.address,
+      pool.totalBorrows,
+      pool.totalBorrowShares
+    );
+
+    await lendingInstance.setPoolStatus(pool.tokenInstance.address, poolStatus.ACTIVE);
+
+    await bnbToken.mint(alice, BigNumber(20).times(WAD));
+    await bnbToken.approve(lendingInstance.address, BigNumber(20).times(WAD), {from: alice});
+
+    // first deposit
+    await lendingInstance.deposit(bnbToken.address, BigNumber(10).times(WAD), {from: alice});
+
+    // user disable use as collateral
+    await lendingInstance.setUserUseAsCollateral(bnbToken.address, false, {from: alice});
+
+    // second deposit
+    await lendingInstance.deposit(bnbToken.address, BigNumber(10).times(WAD), {from: alice});
+
+    const userData = await lendingInstance.getUserPoolData(alice, bnbToken.address);
+    assert.equal(userData.userUsePoolAsCollateral, false);
+  });
+
+  it(`Should get the default use as collateral, if user never deposit to the pool`, async () => {
+    const pool = {
+      tokenInstance: bnbToken,
+      totalAvailableLiquidity: BigNumber(200).times(WAD),
+      liquidityShares: BigNumber(100).times(WAD),
+      totalBorrows: BigNumber(150).times(WAD),
+      totalBorrowShares: BigNumber(100).times(WAD),
+    };
+
+    // mock total supply of alToken
+    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+    await lendingInstance.setPool(
+      pool.tokenInstance.address,
+      pool.totalBorrows,
+      pool.totalBorrowShares
+    );
+
+    await lendingInstance.setPoolStatus(pool.tokenInstance.address, poolStatus.ACTIVE);
+
+    await bnbToken.mint(alice, BigNumber(20).times(WAD));
+    await bnbToken.approve(lendingInstance.address, BigNumber(20).times(WAD), {from: alice});
+
+    const userData = await lendingInstance.getUserPoolData(alice, bnbToken.address);
+    assert.equal(userData.userUsePoolAsCollateral, false);
   });
 });

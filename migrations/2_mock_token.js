@@ -10,11 +10,11 @@ module.exports = (deployer, network, [owner]) => {
     await bnbToken.mint(owner, "1000000000000000000000000000");
 
     await deployer.deploy(MockBUSDToken);
-    const busdToken = await MockBNBToken.deployed();
+    const busdToken = await MockBUSDToken.deployed();
     await busdToken.mint(owner, "1000000000000000000000000000");
 
     await deployer.deploy(MockBTCToken);
-    const btcToken = await MockBNBToken.deployed();
+    const btcToken = await MockBTCToken.deployed();
     await btcToken.mint(owner, "1000000000000000000000000000");
   });
 };

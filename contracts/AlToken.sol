@@ -28,17 +28,19 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
   /**
    * @dev the alpha reward multiplier to calculate Alpha token rewards for the AlToken holder.
    */
-  uint256 public alphaRewardMultiplier;
+  uint256 public alphaMultiplier;
 
   /**
    * @dev the latest reward of user after latest user activity.
-   * Global alphaRewardMultiplier |-----------------|-----------------|--------------->
-   * User's latest reward         |-----------------|-----------------|
-   *                            start                             last block that user do any activity (received rewards)
+   * Global alphaMultiplier |-----------------|-----------------|---------------|
+   *                                                                     alphaMultiplier
+   * User's latest reward   |-----------------|-----------------|
+   *                        start                         last block that user do any activity (received rewards)
+                                                          user's latestAlphaMultiplier
    *
    * user address => latest rewards
    */
-  mapping(address => uint256) latestRewards;
+  mapping(address => uint256) latestAlphaMultiplier;
 
   constructor(
     string memory _name,
@@ -59,7 +61,7 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
   function mint(address _account, uint256 _amount) external onlyOwner {
     claimCurrentAlphaReward(_account);
     _mint(_account, _amount);
-    setLatestReward(_account);
+    setLatestAlphaMultiplier(_account);
   }
 
   /**
@@ -71,7 +73,7 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
   function burn(address _account, uint256 _amount) external onlyOwner {
     claimCurrentAlphaReward(_account);
     _burn(_account, _amount);
-    setLatestReward(_account);
+    setLatestAlphaMultiplier(_account);
   }
 
   /**
@@ -80,11 +82,11 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
    */
   function receiveAlpha(uint256 _amount) external override {
     lendingPool.distributor().alphaToken().transferFrom(msg.sender, address(this), _amount);
-    // Don't change alphaRewardMultiplier if total supply equal zero.
+    // Don't change alphaMultiplier if total supply equal zero.
     if (totalSupply() == 0) {
       return;
     }
-    alphaRewardMultiplier = alphaRewardMultiplier.add(_amount.mul(1e12).div(totalSupply()));
+    alphaMultiplier = alphaMultiplier.add(_amount.mul(1e12).div(totalSupply()));
   }
 
   /**
@@ -95,10 +97,19 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
   function calculateAlphaReward(address _account) public view returns (uint256) {
     //               reward start block                                        now
     // Global                |----------------|----------------|----------------|
-    // User's latest reward    |----------------|----------------|
+    // User's latest reward  |----------------|----------------|
     // User's Alpha rewards                                    |----------------|
-    // reward = (user's Altoken balance * alpha reward multiplier / MULTIPLIER) - user's latest reward
-    return balanceOf(_account).mul(alphaRewardMultiplier).div(1e12).sub(latestRewards[_account]);
+    // reward = [(Global Alpha multiplier - user's lastest Alpha multiplier) * user's Alpha token] / 1e12
+    return
+      (alphaMultiplier.sub(latestAlphaMultiplier[_account]).mul(balanceOf(_account))).div(1e12);
+  }
+
+  /**
+   * @dev claim user's pending Alpha rewards by owner
+   * @param _account the user account address
+   */
+  function claimCurrentAlphaRewardByOwner(address _account) external onlyOwner {
+    claimCurrentAlphaReward(_account);
   }
 
   /**
@@ -120,18 +131,19 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
       lendingPool.distributor().alphaToken().approve(address(vestingAlpha), pending);
       vestingAlpha.accumulateAlphaToUser(_account, pending);
     }
+    setLatestAlphaMultiplier(_account);
   }
 
   /**
-   * @dev set the latest reward of the user account
+   * @dev set the latest alpha multiplier of the user account
    * @param _account the user account address
    */
-  function setLatestReward(address _account) internal {
+  function setLatestAlphaMultiplier(address _account) internal {
     // No op if alpha distributor didn't be set in lending pool.
     if (address(lendingPool.distributor()) == address(0)) {
       return;
     }
-    latestRewards[_account] = balanceOf(_account).mul(alphaRewardMultiplier).div(1e12);
+    latestAlphaMultiplier[_account] = alphaMultiplier;
   }
 
   /**
@@ -152,7 +164,7 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
     claimCurrentAlphaReward(_to);
     super._transfer(_from, _to, _amount);
     require(lendingPool.isAccountHealthy(_from), "Transfer tokens is not allowed");
-    setLatestReward(_from);
-    setLatestReward(_to);
+    setLatestAlphaMultiplier(_from);
+    setLatestAlphaMultiplier(_to);
   }
 }

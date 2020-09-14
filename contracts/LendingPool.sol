@@ -777,9 +777,6 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
     // 5. check account health. this transaction will revert if the account of this user is not healthy
     require(isAccountHealthy(msg.sender), "account is not healthy. can't borrow");
     emit Borrow(address(_token), msg.sender, borrowShare, _amount);
-
-    // 6. Update latest borrow reward
-    setLatestAlphaMultiplier(_token, msg.sender);
   }
 
   /**
@@ -851,9 +848,6 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
     // 4. transfer payback tokens to the pool
     _token.safeTransferFrom(msg.sender, address(this), paybackAmount);
     emit Repay(address(_token), msg.sender, paybackShares, paybackAmount);
-
-    // 5. Update latest borrow reward
-    setLatestAlphaMultiplier(_token, msg.sender);
   }
 
   /**
@@ -1020,9 +1014,6 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
       collateralShares,
       msg.sender
     );
-
-    // 12. update latest borrow reward
-    setLatestAlphaMultiplier(_token, _user);
   }
 
   /**
@@ -1139,21 +1130,15 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    * @dev claim Alpha token rewards from all ERC20 token pools and create receipt for caller
    */
   function claimAlpha() external updateAlphaReward {
-    uint256 totalBorrowReward = 0;
     for (uint256 i = 0; i < tokenList.length; i++) {
       Pool storage pool = pools[address(tokenList[i])];
 
       // claim Alpha rewards as a lender
       pool.alToken.claimCurrentAlphaRewardByOwner(msg.sender);
 
-      // claim Alpha rewards a borrower
-      uint256 reward = calculateAlphaReward(tokenList[i], msg.sender);
-      totalBorrowReward = totalBorrowReward.add(reward);
-      pool.totalAlphaTokenReward = pool.totalAlphaTokenReward.sub(reward);
-      setLatestAlphaMultiplier(tokenList[i], msg.sender);
+      // claim Alpha reward as a borrower
+      claimCurrentAlphaReward(tokenList[i], msg.sender);
     }
-    // send borrow rewards to vesting contract
-    sendAlphaReward(msg.sender, totalBorrowReward);
   }
 
   /**
@@ -1225,7 +1210,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
     return pending < pool.totalAlphaTokenReward ? pending : pool.totalAlphaTokenReward;
   }
 
-   /**
+  /**
    * @dev claim Alpha tokens rewards
    * @param _token the ERC20 pool
    * @param _account the user account that will claim the Alpha tokens
@@ -1236,10 +1221,11 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
       return;
     }
     Pool storage pool = pools[address(_token)];
+    UserPoolData storage userData = userPoolData[_account][address(_token)];
     uint256 reward = calculateAlphaReward(_token, _account);
     pool.totalAlphaTokenReward = pool.totalAlphaTokenReward.sub(reward);
+    userData.latestAlphaMultiplier = pool.alphaMultiplier;
     sendAlphaReward(_account, reward);
-    setLatestAlphaMultiplier(_token, _account);
   }
 
   /**
@@ -1254,20 +1240,5 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
       distributor.alphaToken().approve(address(vestingAlpha), _amount);
       vestingAlpha.accumulateAlphaToUser(_recipient, _amount);
     }
-  }
-
-  /**
-   * @dev set latest user's Alpha multiplier (borrower)
-   * @param _token the ERC20 pool
-   * @param _account the account to set lastest user's Alpha multiplier
-   */
-  function setLatestAlphaMultiplier(ERC20 _token, address _account) internal {
-    // No op if alpha distributor didn't be set in lending pool.
-    if (address(distributor) == address(0)) {
-      return;
-    }
-    Pool storage pool = pools[address(_token)];
-    UserPoolData storage userData = userPoolData[_account][address(_token)];
-    userData.latestAlphaMultiplier = pool.alphaMultiplier;
   }
 }

@@ -92,7 +92,7 @@ contract("AlToken", (accounts) => {
     await alToken.receiveAlpha(receivedAlphaTokan, {from: creator});
     assert.equal((await alphaToken.balanceOf(alToken.address)).valueOf(), "10000000000000000000");
 
-    // alphaRewardMultiplier = (10 * 10^18) * 10^12 / (2 * 10^18) = 5 * 10 ^12
+    // alphaMultiplier = (10 * 10^18) * 10^12 / (2 * 10^18) = 5 * 10 ^12
 
     // ----------------------------------------------------------
     // alice receive alToken #2
@@ -118,7 +118,7 @@ contract("AlToken", (accounts) => {
     await alphaToken.approve(alToken.address, receivedAlphaTokan2, {from: creator});
     await alToken.receiveAlpha(receivedAlphaTokan2, {from: creator});
 
-    // alphaRewardMultiplier = 5*10^12 + ((6*10^18 * 10^12) / 3.6 * 10^18) = 6666666666666 * 10^12
+    // alphaMultiplier = 5*10^12 + ((6*10^18 * 10^12) / 3.6 * 10^18) = 6666666666666 * 10^12
 
     // ----------------------------------------------------------
     // bob mint alToken #4
@@ -133,7 +133,7 @@ contract("AlToken", (accounts) => {
     await alphaToken.approve(alToken.address, receivedAlphaTokan3, {from: creator});
     await alToken.receiveAlpha(receivedAlphaTokan3, {from: creator});
 
-    // alphaRewardMultiplier = 6666666666666 + ((10*10^18 * 10^12) / 4.6 * 10^18) = 8840579710144
+    // alphaMultiplier = 6666666666666 + ((10*10^18 * 10^12) / 4.6 * 10^18) = 8840579710144
 
     // alice burn all alToken #4
     await lendingInstance.burnAlToken(bnbToken.address, alice, BigNumber(3).times(WAD));

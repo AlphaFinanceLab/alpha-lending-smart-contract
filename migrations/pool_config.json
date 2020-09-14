@@ -1,6 +1,6 @@
 {
   "BNB": {
-    "tokenAddress": "0xc5075a3722bf53618A0c48b8676fa00B092b4DeD",
+    "tokenAddress": "0x12Eb9ef44dE5fbea1b2F5Ff7A9a375cAe9bFB2eb",
     "baseBorrowRate": "100000000000000000",
     "rateSlope1": "200000000000000000",
     "rateSlope2": "400000000000000000",
@@ -9,7 +9,7 @@
     "pair": "BNB/USD"
   },
   "BUSD": {
-    "tokenAddress": "0x231d89B15232B5887E7C20d7112c2C9f2Ea2df80",
+    "tokenAddress": "0x5C451c1B3D8d4Ab00f9F3a118B68D32e14e569bD",
     "baseBorrowRate": "100000000000000000",
     "rateSlope1": "200000000000000000",
     "rateSlope2": "400000000000000000",
@@ -18,7 +18,7 @@
     "pair": "BUSD/USD"
   },
   "BTC": {
-    "tokenAddress": "0xFC385D5Ac94387a8A26b967FFe92667177Ca6A23",
+    "tokenAddress": "0x880A4463C7e57AF7f042a2b66Eb3794d69e4aa56",
     "baseBorrowRate": "100000000000000000",
     "rateSlope1": "200000000000000000",
     "rateSlope2": "400000000000000000",

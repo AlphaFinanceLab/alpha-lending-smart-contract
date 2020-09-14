@@ -1227,6 +1227,8 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
 
    /**
    * @dev claim Alpha tokens rewards
+   * @param _token the ERC20 pool
+   * @param _account the user account that will claim the Alpha tokens
    */
   function claimCurrentAlphaReward(ERC20 _token, address _account) internal {
     // No op if alpha distributor didn't be set in lending pool.
@@ -1241,7 +1243,9 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
   }
 
   /**
-   * @dev distribute Alpha tokens to the receiver
+   * @dev send Alpha tokens to the recipient
+   * @param _recipient the recipient of the Alpha reward
+   * @param _amount the Alpha reward amount to send
    */
   function sendAlphaReward(address _recipient, uint256 _amount) internal {
     if (address(vestingAlpha) == address(0)) {
@@ -1254,6 +1258,8 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
 
   /**
    * @dev set latest user's Alpha multiplier (borrower)
+   * @param _token the ERC20 pool
+   * @param _account the account to set lastest user's Alpha multiplier
    */
   function setLatestAlphaMultiplier(ERC20 _token, address _account) internal {
     // No op if alpha distributor didn't be set in lending pool.

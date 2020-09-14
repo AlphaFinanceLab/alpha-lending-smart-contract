@@ -61,7 +61,6 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
   function mint(address _account, uint256 _amount) external onlyOwner {
     claimCurrentAlphaReward(_account);
     _mint(_account, _amount);
-    setLatestAlphaMultiplier(_account);
   }
 
   /**
@@ -73,7 +72,6 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
   function burn(address _account, uint256 _amount) external onlyOwner {
     claimCurrentAlphaReward(_account);
     _burn(_account, _amount);
-    setLatestAlphaMultiplier(_account);
   }
 
   /**

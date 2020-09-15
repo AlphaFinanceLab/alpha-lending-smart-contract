@@ -5,7 +5,7 @@
     "rateSlope1": "20000000000000000",
     "rateSlope2": "40000000000000000",
     "collateralPercent": "650000000000000000",
-    "liquidationBonus": "105000000000000000",
+    "liquidationBonus": "1050000000000000000",
     "pair": "BNB/USD"
   },
   "BUSD": {
@@ -14,7 +14,7 @@
     "rateSlope1": "20000000000000000",
     "rateSlope2": "40000000000000000",
     "collateralPercent": "750000000000000000",
-    "liquidationBonus": "107000000000000000",
+    "liquidationBonus": "1070000000000000000",
     "pair": "BUSD/USD"
   },
   "BTC": {
@@ -23,7 +23,7 @@
     "rateSlope1": "20000000000000000",
     "rateSlope2": "40000000000000000",
     "collateralPercent": "750000000000000000",
-    "liquidationBonus": "105000000000000000",
+    "liquidationBonus": "1050000000000000000",
     "pair": "BTC/USD"
   }
 }

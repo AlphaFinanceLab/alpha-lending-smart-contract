@@ -1,5 +1,5 @@
 const BandPriceOracle = artifacts.require("BandPriceOracle");
-const poolConfigData = require("./config/develop_pool_config.json");
+const poolConfigData = require("./develop_pool_config.json");
 
 const MockBNBToken = artifacts.require("BNBToken");
 const MockBUSDToken = artifacts.require("BUSDToken");

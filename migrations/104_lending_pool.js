@@ -22,6 +22,7 @@ module.exports = async (deployer, network, accounts) => {
 
     const bandOracle = await BandPriceOracle.deployed();
     await lendingPool.setPriceOracle(bandOracle.address);
+    await lendingPool.setReservePercent(100000000000000000);
     let tokenAddresses = {};
     tokenAddresses["BNB"] = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
     tokenAddresses["BUSD"] = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";

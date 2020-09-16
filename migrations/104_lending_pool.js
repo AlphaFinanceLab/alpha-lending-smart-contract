@@ -1,7 +1,7 @@
 const AlTokenDeployer = artifacts.require("AlTokenDeployer");
 const BandPriceOracle = artifacts.require("BandPriceOracle");
 const LendingPool = artifacts.require("LendingPool");
-const DefaultPoolConfiguration = artifacts.require("DefaultPoolConfiguration");
+const PoolConfiguration = artifacts.require("PoolConfiguration");
 const poolConfigData = require("./config/testnet_pool_config.json");
 
 module.exports = async (deployer, network, accounts) => {
@@ -31,14 +31,16 @@ module.exports = async (deployer, network, accounts) => {
     for (const key of Object.keys(poolConfigData)) {
       const token = poolConfigData[key];
       await deployer.deploy(
-        DefaultPoolConfiguration,
+        PoolConfiguration,
         token.baseBorrowRate,
         token.rateSlope1,
         token.rateSlope2,
         token.collateralPercent,
-        token.liquidationBonus
+        token.liquidationBonus,
+        token.optimalUtilizationRate,
+        token.excessUtilizationRate
       );
-      const poolConfig = await DefaultPoolConfiguration.deployed();
+      const poolConfig = await PoolConfiguration.deployed();
       await lendingPool.initPool(tokenAddresses[key], poolConfig.address);
       await lendingPool.setPoolStatus(tokenAddresses[key], poolStatus.ACTIVE);
     }

@@ -3,7 +3,7 @@ const MockBUSDToken = artifacts.require("./mock/BUSDToken.sol");
 const MockBTCToken = artifacts.require("./mock/BTCToken.sol");
 
 module.exports = (deployer, network, [owner]) => {
-  if (network === "development" || network === "test") return;
+  if (network !== "bscdevelop") return;
   deployer.then(async () => {
     await deployer.deploy(MockBNBToken);
     const bnbToken = await MockBNBToken.deployed();

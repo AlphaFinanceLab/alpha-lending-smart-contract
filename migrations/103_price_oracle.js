@@ -1,18 +1,17 @@
 const BandPriceOracle = artifacts.require("BandPriceOracle");
-const poolConfigData = require("./config/develop_pool_config.json");
-
-const MockBNBToken = artifacts.require("BNBToken");
-const MockBUSDToken = artifacts.require("BUSDToken");
-const MockBTCToken = artifacts.require("BTCToken");
+const poolConfigData = require("./config/testnet_pool_config.json");
 
 module.exports = (deployer, network, accounts) => {
-  if (network !== "bscdevelop") return;
+  if (network !== "bsctestnet") return;
   deployer.then(async () => {
     const aggregatorAddress = "0x020EdB075571f0Cd3887Fbd52867A8DC9854c4cC";
+
+    // Binance smart chain testnet token
     let tokenAddresses = {};
-    tokenAddresses["BNB"] = (await MockBNBToken.deployed()).address;
-    tokenAddresses["BUSD"] = (await MockBUSDToken.deployed()).address;
-    tokenAddresses["BTC"] = (await MockBTCToken.deployed()).address;
+    // TODO: Add wrapped BNB token
+    // tokenAddresses["BNB"] = "";
+    tokenAddresses["BUSD"] = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
+    tokenAddresses["BTC"] = "0x6ce8dA28E2f864420840cF74474eFf5fD80E65B8";
 
     await deployer.deploy(BandPriceOracle, aggregatorAddress);
     const bandOracle = await BandPriceOracle.deployed();

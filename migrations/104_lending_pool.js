@@ -2,14 +2,10 @@ const AlTokenDeployer = artifacts.require("AlTokenDeployer");
 const BandPriceOracle = artifacts.require("BandPriceOracle");
 const LendingPool = artifacts.require("LendingPool");
 const DefaultPoolConfiguration = artifacts.require("DefaultPoolConfiguration");
-const poolConfigData = require("./config/develop_pool_config.json");
-
-const MockBNBToken = artifacts.require("./mock/BNBToken.sol");
-const MockBUSDToken = artifacts.require("./mock/BUSDToken.sol");
-const MockBTCToken = artifacts.require("./mock/BTCToken.sol");
+const poolConfigData = require("./config/testnet_pool_config.json");
 
 module.exports = async (deployer, network, accounts) => {
-  if (network !== "bscdevelop") return;
+  if (network !== "bsctestnet") return;
 
   const poolStatus = {
     INACTIVE: 0,
@@ -23,14 +19,14 @@ module.exports = async (deployer, network, accounts) => {
 
     await deployer.deploy(LendingPool, alTokenDeployer.address);
     const lendingPool = await LendingPool.deployed();
-    console.log("LendingPool Address: ", lendingPool.address);
 
     const bandOracle = await BandPriceOracle.deployed();
     await lendingPool.setPriceOracle(bandOracle.address);
     let tokenAddresses = {};
-    tokenAddresses["BNB"] = (await MockBNBToken.deployed()).address;
-    tokenAddresses["BUSD"] = (await MockBUSDToken.deployed()).address;
-    tokenAddresses["BTC"] = (await MockBTCToken.deployed()).address;
+    // TODO: Add wrapped BNB token
+    // tokenAddresses["BNB"] = "";
+    tokenAddresses["BUSD"] = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
+    tokenAddresses["BTC"] = "0x6ce8dA28E2f864420840cF74474eFf5fD80E65B8";
 
     for (const key of Object.keys(poolConfigData)) {
       const token = poolConfigData[key];

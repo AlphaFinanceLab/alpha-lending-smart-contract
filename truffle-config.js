@@ -48,10 +48,21 @@ module.exports = {
       network_id: "*", // Any network (default: none)
       gas: 10000000,
     },
+    bscdevelop: {
+      provider: function () {
+        return new HDWalletProvider(
+          process.env.PRIVATE_KEY, // Dont't forget to export PRIVATE_KEY="<your private key>" first
+          "https://data-seed-prebsc-1-s1.binance.org:8545"
+        );
+      },
+      network_id: "*",
+      gas: 10000000,
+      gasPrice: 10000000000,
+    },
     bsctestnet: {
       provider: function () {
         return new HDWalletProvider(
-          process.env.MNEMONIC, // Dont't forget to export MNEMONIC="<your mnemonic>" first
+          process.env.PRIVATE_KEY, // Dont't forget to export PRIVATE_KEY="<your private key>" first
           "https://data-seed-prebsc-1-s1.binance.org:8545"
         );
       },

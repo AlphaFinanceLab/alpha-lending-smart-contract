@@ -1,0 +1,20 @@
+{
+  "BUSD": {
+    "tokenAddress": "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee",
+    "baseBorrowRate": "10000000000000000",
+    "rateSlope1": "20000000000000000",
+    "rateSlope2": "40000000000000000",
+    "collateralPercent": "750000000000000000",
+    "liquidationBonus": "1070000000000000000",
+    "pair": "BUSD/USD"
+  },
+  "BTC": {
+    "tokenAddress": "0x6ce8dA28E2f864420840cF74474eFf5fD80E65B8",
+    "baseBorrowRate": "10000000000000000",
+    "rateSlope1": "20000000000000000",
+    "rateSlope2": "40000000000000000",
+    "collateralPercent": "750000000000000000",
+    "liquidationBonus": "1050000000000000000",
+    "pair": "BTC/USD"
+  }
+}

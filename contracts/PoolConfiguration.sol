@@ -124,8 +124,7 @@ contract PoolConfiguration is IPoolConfiguration, Ownable {
       );
       return baseBorrowRate.add(rateSlope1).add(rateSlope2.wadMul(excessUtilizationRateRatio));
     } else {
-      return
-        baseBorrowRate.add(utilizationRate.wadMul(rateSlope1).wadDiv(optimalUtilizationRate));
+      return baseBorrowRate.add(utilizationRate.wadMul(rateSlope1).wadDiv(optimalUtilizationRate));
     }
   }
 

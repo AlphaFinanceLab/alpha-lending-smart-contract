@@ -1,6 +1,6 @@
 {
   "BNB": {
-    "tokenAddress": "",
+    "tokenAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     "baseBorrowRate": "0",
     "rateSlope1": "80000000000000000",
     "rateSlope2": "500000000000000000",

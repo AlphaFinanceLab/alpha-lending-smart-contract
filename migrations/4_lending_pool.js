@@ -2,7 +2,7 @@ const AlTokenDeployer = artifacts.require("AlTokenDeployer");
 const BandPriceOracle = artifacts.require("BandPriceOracle");
 const LendingPool = artifacts.require("LendingPool");
 const DefaultPoolConfiguration = artifacts.require("DefaultPoolConfiguration");
-const poolConfigData = require("./develop_pool_config.json");
+const poolConfigData = require("./config/develop_pool_config.json");
 
 const MockBNBToken = artifacts.require("./mock/BNBToken.sol");
 const MockBUSDToken = artifacts.require("./mock/BUSDToken.sol");

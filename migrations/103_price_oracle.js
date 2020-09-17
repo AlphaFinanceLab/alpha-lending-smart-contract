@@ -1,5 +1,5 @@
 const BandPriceOracle = artifacts.require("BandPriceOracle");
-const poolConfigData = require("./testnet_pool_config.json");
+const poolConfigData = require("./config/testnet_pool_config.json");
 
 module.exports = (deployer, network, accounts) => {
   if (network !== "bsctestnet") return;

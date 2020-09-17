@@ -24,9 +24,9 @@ module.exports = async (deployer, network, accounts) => {
     await lendingPool.setPriceOracle(bandOracle.address);
     await lendingPool.setReservePercent("100000000000000000");
     let tokenAddresses = {};
-    tokenAddresses["BNB"] = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
+    tokenAddresses["WBNB"] = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
     tokenAddresses["BUSD"] = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
-    tokenAddresses["BTC"] = "0x6ce8dA28E2f864420840cF74474eFf5fD80E65B8";
+    tokenAddresses["BTCB"] = "0x6ce8dA28E2f864420840cF74474eFf5fD80E65B8";
 
     for (const key of Object.keys(poolConfigData)) {
       const token = poolConfigData[key];

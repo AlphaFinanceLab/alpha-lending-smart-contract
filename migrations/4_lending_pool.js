@@ -28,9 +28,9 @@ module.exports = async (deployer, network, accounts) => {
     const bandOracle = await BandPriceOracle.deployed();
     await lendingPool.setPriceOracle(bandOracle.address);
     let tokenAddresses = {};
-    tokenAddresses["BNB"] = (await MockBNBToken.deployed()).address;
+    tokenAddresses["WBNB"] = (await MockBNBToken.deployed()).address;
     tokenAddresses["BUSD"] = (await MockBUSDToken.deployed()).address;
-    tokenAddresses["BTC"] = (await MockBTCToken.deployed()).address;
+    tokenAddresses["BTCB"] = (await MockBTCToken.deployed()).address;
 
     for (const key of Object.keys(poolConfigData)) {
       const token = poolConfigData[key];

@@ -49,7 +49,7 @@ contract BandPriceOracle is IPriceOracle, Ownable {
    * @param _asset The asset address
    **/
   function getAssetPrice(address _asset) external override view returns (uint256) {
-    string[2] memory pair = tokenToPair[_token];
+    string[2] memory pair = tokenToPair[_asset];
 
     IStdReference.ReferenceData memory rate = ref.getReferenceData(pair[0], pair[1]);
     return rate.rate;

@@ -1,0 +1,35 @@
+{
+  "WBNB": {
+    "tokenAddress": "0xae13d989dac2f0debff460ac112a837c89baa7cd",
+    "baseBorrowRate": "0",
+    "rateSlope1": "80000000000000000",
+    "rateSlope2": "500000000000000000",
+    "collateralPercent": "750000000000000000",
+    "liquidationBonus": "1050000000000000000",
+    "optimalUtilizationRate": "800000000000000000",
+    "excessUtilizationRate": "200000000000000000",
+    "pair": ["BNB", "USD"]
+  },
+  "BUSD": {
+    "tokenAddress": "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee",
+    "baseBorrowRate": "10000000000000000",
+    "rateSlope1": "70000000000000000",
+    "rateSlope2": "600000000000000000",
+    "collateralPercent": "850000000000000000",
+    "liquidationBonus": "1050000000000000000",
+    "optimalUtilizationRate": "900000000000000000",
+    "excessUtilizationRate": "100000000000000000",
+    "pair": ["BUSD", "USD"]
+  },
+  "BTCB": {
+    "tokenAddress": "0x6ce8dA28E2f864420840cF74474eFf5fD80E65B8",
+    "baseBorrowRate": "0",
+    "rateSlope1": "80000000000000000",
+    "rateSlope2": "500000000000000000",
+    "collateralPercent": "850000000000000000",
+    "liquidationBonus": "1050000000000000000",
+    "optimalUtilizationRate": "800000000000000000",
+    "excessUtilizationRate": "200000000000000000",
+    "pair": ["BTC", "USD"]
+  }
+}

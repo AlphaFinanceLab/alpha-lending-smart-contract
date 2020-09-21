@@ -1,15 +1,11 @@
 const AlTokenDeployer = artifacts.require("AlTokenDeployer");
 const BandPriceOracle = artifacts.require("BandPriceOracle");
 const LendingPool = artifacts.require("LendingPool");
-const DefaultPoolConfiguration = artifacts.require("DefaultPoolConfiguration");
-const poolConfigData = require("./config/develop_pool_config.json");
-
-const MockBNBToken = artifacts.require("./mock/BNBToken.sol");
-const MockBUSDToken = artifacts.require("./mock/BUSDToken.sol");
-const MockBTCToken = artifacts.require("./mock/BTCToken.sol");
+const PoolConfiguration = artifacts.require("PoolConfiguration");
+const poolConfigData = require("./config/testnet_pool_config.json");
 
 module.exports = async (deployer, network, accounts) => {
-  if (network !== "bscdevelop") return;
+  if (network !== "bsctestnet") return;
 
   const poolStatus = {
     INACTIVE: 0,
@@ -23,26 +19,28 @@ module.exports = async (deployer, network, accounts) => {
 
     await deployer.deploy(LendingPool, alTokenDeployer.address);
     const lendingPool = await LendingPool.deployed();
-    console.log("LendingPool Address: ", lendingPool.address);
 
     const bandOracle = await BandPriceOracle.deployed();
     await lendingPool.setPriceOracle(bandOracle.address);
+    await lendingPool.setReservePercent("100000000000000000");
     let tokenAddresses = {};
-    tokenAddresses["WBNB"] = (await MockBNBToken.deployed()).address;
-    tokenAddresses["BUSD"] = (await MockBUSDToken.deployed()).address;
-    tokenAddresses["BTCB"] = (await MockBTCToken.deployed()).address;
+    tokenAddresses["WBNB"] = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
+    tokenAddresses["BUSD"] = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
+    tokenAddresses["BTCB"] = "0x6ce8dA28E2f864420840cF74474eFf5fD80E65B8";
 
     for (const key of Object.keys(poolConfigData)) {
       const token = poolConfigData[key];
       await deployer.deploy(
-        DefaultPoolConfiguration,
+        PoolConfiguration,
         token.baseBorrowRate,
         token.rateSlope1,
         token.rateSlope2,
         token.collateralPercent,
-        token.liquidationBonus
+        token.liquidationBonus,
+        token.optimalUtilizationRate,
+        token.excessUtilizationRate
       );
-      const poolConfig = await DefaultPoolConfiguration.deployed();
+      const poolConfig = await PoolConfiguration.deployed();
       await lendingPool.initPool(tokenAddresses[key], poolConfig.address);
       await lendingPool.setPoolStatus(tokenAddresses[key], poolStatus.ACTIVE);
     }

@@ -302,7 +302,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
       require(tokenList[i] != _token, "this pool already exists on lending pool");
     }
     string memory alTokenSymbol = string(abi.encodePacked("al", _token.symbol()));
-    string memory alTokenName = string(abi.encodePacked("Al", _token.name()));
+    string memory alTokenName = string(abi.encodePacked("Al", _token.symbol()));
     AlToken alToken = alTokenDeployer.createNewAlToken(alTokenName, alTokenSymbol, _token);
     Pool memory pool = Pool(
       PoolStatus.INACTIVE,

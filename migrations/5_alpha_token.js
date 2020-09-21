@@ -10,7 +10,7 @@ const pool1Curve = require("./alpha_pool1_curve.json");
 const pool2Curve = require("./alpha_pool2_curve.json");
 
 module.exports = async (deployer, network, accounts) => {
-  if (network === "development" || network === "test") return;
+  if (network !== "bscdevelop") return;
   deployer.then(async () => {
     await deployer.deploy(AlphaToken, "100000000000000000000000000");
     const alphaToken = await AlphaToken.deployed();

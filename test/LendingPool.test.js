@@ -62,7 +62,7 @@ contract("LendingPool", (accounts) => {
     const expectTotalBorrowShares = 0;
     const expectTotalLiquidity = 0;
     const expectTotalAvailableLiquidity = 0;
-    const expectedAlTokenName = "AlBinance Coin";
+    const expectedAlTokenName = "AlBNB";
     const expectedAlTokenSymbol = "alBNB";
 
     alToken = await AlToken.at(poolData.alTokenAddress);

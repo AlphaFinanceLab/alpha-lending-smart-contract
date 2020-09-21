@@ -2,7 +2,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {IPriceOracle} from "./interfaces/IPriceOracle.sol";
-import {IBandOracleAggregator} from "./interfaces/IBandOraclePriceAggregator.sol";
+import {IStdReference} from "./interfaces/IStdReference.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
@@ -17,20 +17,20 @@ contract BandPriceOracle is IPriceOracle, Ownable {
   /**
   @notice BandChain's BridgeWithCache interface
   **/
-  IBandOracleAggregator public aggregator;
+  IStdReference ref;
 
   /**
-  @notice Mapping between asset address and BandChain's oracle request packet
+  @notice Mapping between asset address and token pair strings
   **/
-  mapping(address => string) public tokenToPair;
+  mapping(address => string[2]) public tokenToPair;
 
   /**
    * @notice Contract constructor
    * @dev Initializes a new BandPriceOracle instance.
-   * @param _aggregator Band's aggregator proxy contract
+   * @param _ref Band's StdReference contract
    **/
-  constructor(IBandOracleAggregator _aggregator) public {
-    aggregator = _aggregator;
+  constructor(IStdReference _ref) public {
+    ref = _ref;
   }
 
   /**
@@ -38,22 +38,20 @@ contract BandPriceOracle is IPriceOracle, Ownable {
    * @param _asset The token address the asset
    * @param _pair The symbol pair associated with _asset
    **/
-  function setTokenPairMap(address _asset, string memory _pair) public onlyOwner {
+  function setTokenPairMap(address _asset, string[2] memory _pair) public onlyOwner {
     tokenToPair[_asset] = _pair;
   }
 
   /**
    * @notice Returns the latest price of an asset given the asset's address
    * @dev The function uses `tokenToPair` to get the symbol string pair associated with the input `_asset``
-   * It then uses that the pair string as a parameter to Band's aggregator contract's `getReferenceDAta` method to get * the latest price of the asset.
+   * It then uses that the pair string as a parameter to Band's StdReference contract's `getReferenceData` method to get * the latest price of the asset.
    * @param _asset The asset address
    **/
   function getAssetPrice(address _asset) external override view returns (uint256) {
-    uint256[] memory rates;
-    string[] memory pairs = new string[](1);
+    string[2] memory pair = tokenToPair[_asset];
 
-    pairs[0] = tokenToPair[_asset];
-    rates = aggregator.getReferenceData(pairs);
-    return rates[0];
+    IStdReference.ReferenceData memory rate = ref.getReferenceData(pair[0], pair[1]);
+    return rate.rate;
   }
 }

@@ -26,7 +26,7 @@
     "baseBorrowRate": "0",
     "rateSlope1": "80000000000000000",
     "rateSlope2": "500000000000000000",
-    "collateralPercent": "750000000000000000",
+    "collateralPercent": "850000000000000000",
     "liquidationBonus": "1050000000000000000",
     "optimalUtilizationRate": "800000000000000000",
     "excessUtilizationRate": "200000000000000000",

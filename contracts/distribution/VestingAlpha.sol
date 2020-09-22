@@ -92,6 +92,7 @@ contract VestingAlpha is IVestingAlpha {
   function claim(uint256 _receiptID) external override {
     require(_receiptID < receipts.length, "Receipt ID not found");
     Receipt storage receipt = receipts[_receiptID];
+    require(receipt.claimedAmount < receipt.amount, "This receipt has been claimed all tokens");
     require(msg.sender == receipt.recipient, "Only receipt recipient can claim this receipt");
     uint256 duration = now.sub(receipt.createdAt) < vestingDuration
       ? now.sub(receipt.createdAt)

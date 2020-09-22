@@ -95,9 +95,9 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     view
     returns (IAlphaReceiver[] memory, uint256[] memory)
   {
-    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](receiverList.length);
-    uint256[] memory amounts = new uint256[](receiverList.length);
-    for (uint256 i = 0; i < receiverList.length; i++) {
+    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](receiverCount);
+    uint256[] memory amounts = new uint256[](receiverCount);
+    for (uint256 i = 0; i < receiverCount; i++) {
       receivers[i] = IAlphaReceiver(receiverList[i]);
       IAlphaReleaseRule releaseRule = rules[receiverList[i]];
       amounts[i] = releaseRule.getReleaseAmount(_fromBlock, _toBlock);

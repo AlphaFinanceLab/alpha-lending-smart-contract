@@ -14,19 +14,21 @@ import "../interfaces/IAlphaReleaseRuleSelector.sol";
 
 contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
   using SafeMath for uint256;
+
   /**
-   * @dev the list of receivers
+   * @dev the struct for storing the receiver's rule
    */
-  address[] public receiverList;
+  struct ReceiverRule {
+    // Alpha receiver
+    IAlphaReceiver receiver;
+    // release rule
+    IAlphaReleaseRule rule;
+  }
+
   /**
-   * @dev the count of receiver
+   * @dev the list of receivers with rule
    */
-  uint256 public receiverCount;
-  /**
-   * @dev the mapping of receiver address to the Alpha release rule
-   *  receiver address => the Alpha release rule
-   */
-  mapping(address => IAlphaReleaseRule) public rules;
+  ReceiverRule[] public receiverRuleList;
 
   /**
    * @dev emitted on update Alpha release rule 
@@ -38,10 +40,6 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     address indexed rule
   );
 
-  constructor() public {
-    receiverCount = 0;
-  }
-
   /**
    * @dev set the Alpha release rule to the Alpha token reward receiver
    * @param _receiver the receiver to set the Alpha release rule
@@ -52,10 +50,11 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     external
     onlyOwner
   {
-    receiverList.push(address(_receiver));
-    receiverCount++;
-    // Set the release rule to the receiver
-    rules[address(_receiver)] = _rule;
+    ReceiverRule memory receiverRule = ReceiverRule(
+      _receiver,
+      _rule
+    );
+    receiverRuleList.push(receiverRule);
     emit AlphaReleaseRuleUpdated(address(_receiver), address(_rule));
   }
 
@@ -64,11 +63,10 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     onlyOwner
   {
     address removedReceiver = address(_receiver);
-    for (uint256 i = 0; i < receiverList.length; i++) {
-      if (address(receiverList[i]) == removedReceiver) {
-        receiverList[i] = receiverList[receiverList.length.sub(1)];
-        receiverList.pop();
-        receiverCount--;
+    for (uint256 i = 0; i < receiverRuleList.length; i++) {
+      if (address(receiverRuleList[i].receiver) == removedReceiver) {
+        receiverRuleList[i] = receiverRuleList[receiverRuleList.length.sub(1)];
+        receiverRuleList.pop();
         break;
       }
     }
@@ -79,7 +77,11 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
    * @param _receiver the receiver to get the release rule
    */
   function getReleaseRule(IAlphaReceiver _receiver) external view returns (IAlphaReleaseRule) {
-    return rules[address(_receiver)];
+    for (uint256 i = 0; i < receiverRuleList.length; i++) {
+      if (address(receiverRuleList[i].receiver) == address(_receiver)) {
+        return receiverRuleList[i].rule;
+      }
+    }
   }
 
   /**
@@ -95,11 +97,11 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     view
     returns (IAlphaReceiver[] memory, uint256[] memory)
   {
-    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](receiverCount);
-    uint256[] memory amounts = new uint256[](receiverCount);
-    for (uint256 i = 0; i < receiverCount; i++) {
-      receivers[i] = IAlphaReceiver(receiverList[i]);
-      IAlphaReleaseRule releaseRule = rules[receiverList[i]];
+    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](receiverRuleList.length);
+    uint256[] memory amounts = new uint256[](receiverRuleList.length);
+    for (uint256 i = 0; i < receiverRuleList.length; i++) {
+      receivers[i] = IAlphaReceiver(receiverRuleList[i].receiver);
+      IAlphaReleaseRule releaseRule = receiverRuleList[i].rule;
       amounts[i] = releaseRule.getReleaseAmount(_fromBlock, _toBlock);
     }
     return (receivers, amounts);

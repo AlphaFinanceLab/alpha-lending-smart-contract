@@ -1,6 +1,7 @@
 pragma solidity 0.6.11;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IAlphaReceiver.sol";
 import "../interfaces/IAlphaReleaseRule.sol";
 import "../interfaces/IAlphaReleaseRuleSelector.sol";
@@ -12,11 +13,15 @@ import "../interfaces/IAlphaReleaseRuleSelector.sol";
  **/
 
 contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
-
+  using SafeMath for uint256;
   /**
    * @dev the list of receivers
    */
   address[] public receiverList;
+  /**
+   * @dev the count of receiver
+   */
+  uint256 public receiverCount;
   /**
    * @dev the mapping of receiver address to the Alpha release rule
    *  receiver address => the Alpha release rule
@@ -33,6 +38,10 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     address indexed rule
   );
 
+  constructor() public {
+    receiverCount = 0;
+  }
+
   /**
    * @dev set the Alpha release rule to the Alpha token reward receiver
    * @param _receiver the receiver to set the Alpha release rule
@@ -44,10 +53,25 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     onlyOwner
   {
     receiverList.push(address(_receiver));
-    
+    receiverCount++;
     // Set the release rule to the receiver
     rules[address(_receiver)] = _rule;
     emit AlphaReleaseRuleUpdated(address(_receiver), address(_rule));
+  }
+
+  function removeAlphaReleaseRule(IAlphaReceiver _receiver)
+    external
+    onlyOwner
+  {
+    address removedReceiver = address(_receiver);
+    for (uint256 i = 0; i < receiverList.length; i++) {
+      if (address(receiverList[i]) == removedReceiver) {
+        receiverList[i] = receiverList[receiverList.length.sub(1)];
+        receiverList.pop();
+        receiverCount--;
+        break;
+      }
+    }
   }
 
   /**

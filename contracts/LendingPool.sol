@@ -3,6 +3,7 @@ pragma solidity 0.6.11;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/IAlphaDistributor.sol";
 import "./interfaces/IAlphaReceiver.sol";
 import "./interfaces/ILendingPool.sol";
@@ -20,7 +21,7 @@ import "./libraries/WadMath.sol";
  * @author Alpha
  **/
 
-contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
+contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
   using SafeMath for uint256;
   using WadMath for uint256;
   using SafeERC20 for ERC20;
@@ -714,6 +715,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    */
   function deposit(ERC20 _token, uint256 _amount)
     external
+    nonReentrant
     updatePoolWithInterestsAndTimestamp(_token)
     updateAlphaReward
   {
@@ -754,6 +756,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    */
   function borrow(ERC20 _token, uint256 _amount)
     external
+    nonReentrant
     updatePoolWithInterestsAndTimestamp(_token)
     updateAlphaReward
   {
@@ -796,6 +799,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    */
   function repayByAmount(ERC20 _token, uint256 _amount)
     external
+    nonReentrant
     updatePoolWithInterestsAndTimestamp(_token)
     updateAlphaReward
   {
@@ -813,6 +817,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    */
   function repayByShare(ERC20 _token, uint256 _share)
     external
+    nonReentrant
     updatePoolWithInterestsAndTimestamp(_token)
     updateAlphaReward
   {
@@ -871,6 +876,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    */
   function withdraw(ERC20 _token, uint256 _share)
     external
+    nonReentrant
     updatePoolWithInterestsAndTimestamp(_token)
     updateAlphaReward
   {
@@ -915,6 +921,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
     ERC20 _collateral
   )
     external
+    nonReentrant
     updatePoolWithInterestsAndTimestamp(_token)
     updatePoolWithInterestsAndTimestamp(_collateral)
     updateAlphaReward
@@ -1069,6 +1076,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    */
   function withdrawReserve(ERC20 _token, uint256 _amount)
     external
+    nonReentrant
     updatePoolWithInterestsAndTimestamp(_token)
     onlyOwner
   {
@@ -1103,7 +1111,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
    * receive Alpha token rewards from the distributor
    * @param _amount the amount of Alpha token to receive
    */
-  function receiveAlpha(uint256 _amount) external override {
+  function receiveAlpha(uint256 _amount) external override nonReentrant {
     // Calculate total borrow value.
     uint256[] memory borrows = new uint256[](tokenList.length);
     uint256 totalBorrow = 0;
@@ -1137,7 +1145,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver {
   /**
    * @dev claim Alpha token rewards from all ERC20 token pools and create receipt for caller
    */
-  function claimAlpha() external updateAlphaReward {
+  function claimAlpha() external updateAlphaReward nonReentrant {
     for (uint256 i = 0; i < tokenList.length; i++) {
       Pool storage pool = pools[address(tokenList[i])];
 

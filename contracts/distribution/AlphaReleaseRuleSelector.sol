@@ -12,22 +12,16 @@ import "../interfaces/IAlphaReleaseRuleSelector.sol";
  **/
 
 contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
-  address constant HEAD = address(1);
 
   /**
-   * @dev the receiver linked list
-   *  receiver address => the next receiver address
+   * @dev the list of receivers
    */
-  mapping(address => address) public receiverList;
+  address[] public receiverList;
   /**
    * @dev the mapping of receiver address to the Alpha release rule
    *  receiver address => the Alpha release rule
    */
   mapping(address => IAlphaReleaseRule) public rules;
-  /**
-   * @dev the number of all rules registered to the Alpha release rule selector
-   */
-  uint256 public ruleCount;
 
   /**
    * @dev emitted on update Alpha release rule 
@@ -39,10 +33,6 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     address indexed rule
   );
 
-  constructor() public {
-    receiverList[HEAD] = HEAD;
-  }
-
   /**
    * @dev set the Alpha release rule to the Alpha token reward receiver
    * @param _receiver the receiver to set the Alpha release rule
@@ -53,12 +43,8 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     external
     onlyOwner
   {
-    // Add new rules
-    if (receiverList[address(_receiver)] == address(0)) {
-      receiverList[address(_receiver)] = receiverList[HEAD];
-      receiverList[HEAD] = address(_receiver);
-      ruleCount++;
-    }
+    receiverList.push(address(_receiver));
+    
     // Set the release rule to the receiver
     rules[address(_receiver)] = _rule;
     emit AlphaReleaseRuleUpdated(address(_receiver), address(_rule));
@@ -85,14 +71,12 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     view
     returns (IAlphaReceiver[] memory, uint256[] memory)
   {
-    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](ruleCount);
-    uint256[] memory amounts = new uint256[](ruleCount);
-    address currentReceivers = receiverList[HEAD];
-    for (uint256 i = 0; i < ruleCount; i++) {
-      receivers[i] = IAlphaReceiver(currentReceivers);
-      IAlphaReleaseRule releaseRule = rules[currentReceivers];
+    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](receiverList.length);
+    uint256[] memory amounts = new uint256[](receiverList.length);
+    for (uint256 i = 0; i < receiverList.length; i++) {
+      receivers[i] = IAlphaReceiver(receiverList[i]);
+      IAlphaReleaseRule releaseRule = rules[receiverList[i]];
       amounts[i] = releaseRule.getReleaseAmount(_fromBlock, _toBlock);
-      currentReceivers = receiverList[currentReceivers];
     }
     return (receivers, amounts);
   }

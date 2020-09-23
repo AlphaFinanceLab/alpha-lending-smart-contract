@@ -2,6 +2,7 @@
 pragma solidity 0.6.11;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IVestingAlpha.sol";
 import "./AlphaToken.sol";
 
@@ -11,7 +12,7 @@ import "./AlphaToken.sol";
  * @author Alpha
  */
 
-contract VestingAlpha is IVestingAlpha {
+contract VestingAlpha is IVestingAlpha, ReentrancyGuard {
   using SafeMath for uint256;
 
   /**
@@ -65,7 +66,7 @@ contract VestingAlpha is IVestingAlpha {
    * @param _user the user account address
    * @param _amount the amount of Alpha token to accumulate
    */
-  function accumulateAlphaToUser(address _user, uint256 _amount) external override {
+  function accumulateAlphaToUser(address _user, uint256 _amount) external override nonReentrant {
     alphaToken.transferFrom(msg.sender, address(this), _amount);
     userAccumulatedAlpha[_user] = userAccumulatedAlpha[_user].add(_amount);
     emit AlphaTokenAccumulated(_user, _amount);
@@ -74,7 +75,7 @@ contract VestingAlpha is IVestingAlpha {
   /**
    * @dev create receipt for caller
    */
-  function createReceipt() external override returns (uint256) {
+  function createReceipt() external override nonReentrant returns (uint256) {
     uint256 amount = userAccumulatedAlpha[msg.sender];
     require(amount > 0, "User don't have accumulate Alpha to create receipt");
     receipts.push(
@@ -89,7 +90,7 @@ contract VestingAlpha is IVestingAlpha {
    * @dev claim receipt by receipt ID
    * @param _receiptID the ID of the receipt to claim
    */
-  function claim(uint256 _receiptID) external override {
+  function claim(uint256 _receiptID) external override nonReentrant {
     require(_receiptID < receipts.length, "Receipt ID not found");
     Receipt storage receipt = receipts[_receiptID];
     require(receipt.claimedAmount < receipt.amount, "This receipt has been claimed all tokens");

@@ -2,6 +2,7 @@
 pragma solidity 0.6.11;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IAlphaDistributor.sol";
 import "../interfaces/IAlphaReceiver.sol";
 import "../interfaces/IAlphaReleaseRuleSelector.sol";
@@ -14,7 +15,7 @@ import "./AlphaToken.sol";
  * @author Alpha
  */
 
-contract AlphaDistributor is Ownable, IAlphaDistributor {
+contract AlphaDistributor is Ownable, ReentrancyGuard, IAlphaDistributor {
   /**
    * @dev the Alpha token to distribute
    */
@@ -59,7 +60,7 @@ contract AlphaDistributor is Ownable, IAlphaDistributor {
    * @dev distributes Alpha token to the receiver from the last distributed block
    * to the latest block forrowing the release rules
    */
-  function poke() public override {
+  function poke() public override nonReentrant {
     if (lastPokeBlock == block.number) {
       return;
     }

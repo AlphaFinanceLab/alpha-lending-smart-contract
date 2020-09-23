@@ -46,7 +46,6 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
    * @param rule the release rule of Alpha receiver 
    */
   event AlphaReleaseRuleRemoved(
-    uint256 indexed index,
     address indexed receiver,
     address indexed rule
   );
@@ -76,7 +75,7 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     ReceiverRule storage removedReceiverRule = receiverRuleList[_index];
     receiverRuleList[_index] = receiverRuleList[receiverRuleList.length.sub(1)];
     receiverRuleList.pop();
-    emit AlphaReleaseRuleRemoved(_index, address(removedReceiverRule.receiver), address(removedReceiverRule.rule));
+    emit AlphaReleaseRuleRemoved(address(removedReceiverRule.receiver), address(removedReceiverRule.rule));
   }
 
   /**

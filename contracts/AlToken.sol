@@ -3,6 +3,7 @@ pragma solidity 0.6.11;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/IAlphaReceiver.sol";
 import "./interfaces/ILendingPool.sol";
 import "./interfaces/IVestingAlpha.sol";
@@ -14,7 +15,7 @@ import "./interfaces/IVestingAlpha.sol";
  * @author Alpha
  **/
 
-contract AlToken is ERC20, Ownable, IAlphaReceiver {
+contract AlToken is ERC20, Ownable, IAlphaReceiver, ReentrancyGuard {
   /**
    * @dev the lending pool of the AlToken
    */
@@ -78,7 +79,7 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver {
    * @dev receive Alpha token from the token distributor
    * @param _amount the amount of Alpha to receive
    */
-  function receiveAlpha(uint256 _amount) external override {
+  function receiveAlpha(uint256 _amount) external override nonReentrant {
     lendingPool.distributor().alphaToken().transferFrom(msg.sender, address(this), _amount);
     // Don't change alphaMultiplier if total supply equal zero.
     if (totalSupply() == 0) {

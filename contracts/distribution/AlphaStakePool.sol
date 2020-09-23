@@ -4,6 +4,7 @@ pragma solidity 0.6.11;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IAlphaReceiver.sol";
 import "../interfaces/IVestingAlpha.sol";
 import "./AlphaToken.sol";
@@ -14,7 +15,7 @@ import "./AlphaToken.sol";
  * @author Alpha
  */
 
-contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaReceiver {
+contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaReceiver, ReentrancyGuard {
   using SafeMath for uint256;
 
   /**
@@ -43,7 +44,7 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    * when user stake Alpha token to the staking pool then they will got the ALPHASTAKE token
    * which can use to clain their Alpha token from the staking pool
    */
-  function stake(uint256 _amount) public {
+  function stake(uint256 _amount) public nonReentrant {
     uint256 total = alphaToken.balanceOf(address(this));
     uint256 totalShares = totalSupply();
     alphaToken.transferFrom(msg.sender, address(this), _amount);
@@ -60,7 +61,7 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    * when user unstake their token, the stake token will be burned.
    * user got the receipt to claim Alpha token after lock time period
    */
-  function unstake(uint256 _share) public {
+  function unstake(uint256 _share) public nonReentrant {
     uint256 totalShares = totalSupply();
     uint256 reward = _share.mul(alphaToken.balanceOf(address(this))).div(totalShares);
     _burn(msg.sender, _share);
@@ -78,7 +79,7 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    * the staking pool receive Alpha token from the caller, this will transfer
    * Alpha token from caller
    */
-  function receiveAlpha(uint256 _amount) external override {
+  function receiveAlpha(uint256 _amount) external override nonReentrant {
     alphaToken.transferFrom(msg.sender, address(this), _amount);
   }
 }

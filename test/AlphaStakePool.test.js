@@ -181,10 +181,13 @@ contract("AlphaStakePool", (accounts) => {
 
     // alice claim receipt#0
     await vestingAlpha.claim(receiptId, {from: alice});
-
     expect(BigNumber(await alphaToken.balanceOf(alice))).to.be.bignumber.eq(BigNumber(100));
 
-    await vestingAlpha.claim(receiptId, {from: alice});
+    // alice claim receipt#0 again
+    await truffleAssert.reverts(
+      vestingAlpha.claim(receiptId),
+      "This receipt has been claimed all tokens"
+    );
 
     expect(BigNumber(await alphaToken.balanceOf(alice))).to.be.bignumber.eq(BigNumber(100));
   });

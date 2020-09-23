@@ -61,9 +61,11 @@ contract("VestingAlpha", ([creator, alice, bob]) => {
       await this.vestingAlpha.accumulateAlphaToUser(alice, "1000");
       await this.vestingAlpha.createReceipt({from: alice});
     });
+
     it("Should not claim on invalid receipt", async () => {
       await truffleAssert.reverts(this.vestingAlpha.claim(2), "Receipt ID not found");
     });
+
     it("Should claim when time passed", async () => {
       await time.increase("86400");
       // 1/7 of reward should be claimed
@@ -88,6 +90,21 @@ contract("VestingAlpha", ([creator, alice, bob]) => {
       assert.equal((await this.alphaToken.balanceOf(this.vestingAlpha.address)).valueOf(), "2000");
       assert.equal((await this.alphaToken.balanceOf(alice)).valueOf(), "1000");
     });
+
+    it("Shouldn't claim if the receipt has been claimed all tokens", async () => {
+      // Claim all tokens
+      await time.increase("604800");
+      await this.vestingAlpha.claim(0, {from: alice});
+      assert.equal((await this.alphaToken.balanceOf(this.vestingAlpha.address)).valueOf(), "0");
+      assert.equal((await this.alphaToken.balanceOf(alice)).valueOf(), "1000");
+
+      // Claim receipt that has been claim all tokens
+      await truffleAssert.reverts(
+        this.vestingAlpha.claim(0),
+        "This receipt has been claimed all tokens"
+      );
+    });
+
     it("Shouldn't claim by other user", async () => {
       await time.increase("302401");
       await truffleAssert.reverts(

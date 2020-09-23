@@ -1,6 +1,7 @@
 pragma solidity 0.6.11;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IAlphaReceiver.sol";
 import "../interfaces/IAlphaReleaseRule.sol";
 import "../interfaces/IAlphaReleaseRuleSelector.sol";
@@ -12,36 +13,46 @@ import "../interfaces/IAlphaReleaseRuleSelector.sol";
  **/
 
 contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
-  address constant HEAD = address(1);
+  using SafeMath for uint256;
 
   /**
-   * @dev the receiver linked list
-   *  receiver address => the next receiver address
+   * @dev the struct for storing the receiver's rule
    */
-  mapping(address => address) public receiverList;
+  struct ReceiverRule {
+    // Alpha receiver
+    IAlphaReceiver receiver;
+    // release rule
+    IAlphaReleaseRule rule;
+  }
+
   /**
-   * @dev the mapping of receiver address to the Alpha release rule
-   *  receiver address => the Alpha release rule
+   * @dev the list of receivers with rule
    */
-  mapping(address => IAlphaReleaseRule) public rules;
-  /**
-   * @dev the number of all rules registered to the Alpha release rule selector
-   */
-  uint256 public ruleCount;
+  ReceiverRule[] public receiverRuleList;
 
   /**
    * @dev emitted on update Alpha release rule 
+   * @param index the index to update
    * @param receiver the address of Alpha receiver
    * @param rule the release rule of Alpha receiver
    */
   event AlphaReleaseRuleUpdated(
+    uint256 indexed index,
     address indexed receiver,
     address indexed rule
   );
 
-  constructor() public {
-    receiverList[HEAD] = HEAD;
-  }
+  /**
+   * @dev emitted on remove Alpha release rule
+   * @param index the index to remove
+   * @param receiver the address of receiver
+   * @param rule the release rule of Alpha receiver 
+   */
+  event AlphaReleaseRuleRemoved(
+    uint256 indexed index,
+    address indexed receiver,
+    address indexed rule
+  );
 
   /**
    * @dev set the Alpha release rule to the Alpha token reward receiver
@@ -53,23 +64,31 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     external
     onlyOwner
   {
-    // Add new rules
-    if (receiverList[address(_receiver)] == address(0)) {
-      receiverList[address(_receiver)] = receiverList[HEAD];
-      receiverList[HEAD] = address(_receiver);
-      ruleCount++;
-    }
-    // Set the release rule to the receiver
-    rules[address(_receiver)] = _rule;
-    emit AlphaReleaseRuleUpdated(address(_receiver), address(_rule));
+    ReceiverRule memory receiverRule = ReceiverRule(
+      _receiver,
+      _rule
+    );
+    receiverRuleList.push(receiverRule);
+    uint256 index = receiverRuleList.length.sub(1);
+    emit AlphaReleaseRuleUpdated(index, address(_receiver), address(_rule));
+  }
+
+  function removeAlphaReleaseRule(uint256 _index)
+    external
+    onlyOwner
+  {
+    ReceiverRule storage removedReceiverRule = receiverRuleList[_index];
+    receiverRuleList[_index] = receiverRuleList[receiverRuleList.length.sub(1)];
+    receiverRuleList.pop();
+    emit AlphaReleaseRuleRemoved(_index, address(removedReceiverRule.receiver), address(removedReceiverRule.rule));
   }
 
   /**
-   * @dev get the release rule of the receiver
-   * @param _receiver the receiver to get the release rule
+   * @dev get receiverRuleList length
+   * @return get receiverRuleList length
    */
-  function getReleaseRule(IAlphaReceiver _receiver) external view returns (IAlphaReleaseRule) {
-    return rules[address(_receiver)];
+  function getreceiverRuleListLength() external view returns (uint256) {
+    return receiverRuleList.length;
   }
 
   /**
@@ -85,14 +104,12 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     view
     returns (IAlphaReceiver[] memory, uint256[] memory)
   {
-    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](ruleCount);
-    uint256[] memory amounts = new uint256[](ruleCount);
-    address currentReceivers = receiverList[HEAD];
-    for (uint256 i = 0; i < ruleCount; i++) {
-      receivers[i] = IAlphaReceiver(currentReceivers);
-      IAlphaReleaseRule releaseRule = rules[currentReceivers];
-      amounts[i] = releaseRule.getReleaseAmount(_fromBlock, _toBlock);
-      currentReceivers = receiverList[currentReceivers];
+    IAlphaReceiver[] memory receivers = new IAlphaReceiver[](receiverRuleList.length);
+    uint256[] memory amounts = new uint256[](receiverRuleList.length);
+    for (uint256 i = 0; i < receiverRuleList.length; i++) {
+      ReceiverRule storage receiverRule = receiverRuleList[i];
+      receivers[i] = IAlphaReceiver(receiverRule.receiver);
+      amounts[i] = receiverRule.rule.getReleaseAmount(_fromBlock, _toBlock);
     }
     return (receivers, amounts);
   }

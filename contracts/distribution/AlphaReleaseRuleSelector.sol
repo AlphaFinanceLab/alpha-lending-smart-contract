@@ -41,6 +41,17 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
   );
 
   /**
+   * @dev emitted on remove Alpha release rule
+   * @param receiver the address of receiver
+   * @param rule the release rule of Alpha receiver 
+   */
+  event AlphaReleaseRuleRemoved(
+    uint256 indexed index,
+    address indexed receiver,
+    address indexed rule
+  );
+
+  /**
    * @dev set the Alpha release rule to the Alpha token reward receiver
    * @param _receiver the receiver to set the Alpha release rule
    * @param _rule the Alpha release rule of the receiver
@@ -58,30 +69,22 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     emit AlphaReleaseRuleUpdated(address(_receiver), address(_rule));
   }
 
-  function removeAlphaReleaseRule(IAlphaReceiver _receiver)
+  function removeAlphaReleaseRule(uint256 _index)
     external
     onlyOwner
   {
-    address removedReceiver = address(_receiver);
-    for (uint256 i = 0; i < receiverRuleList.length; i++) {
-      if (address(receiverRuleList[i].receiver) == removedReceiver) {
-        receiverRuleList[i] = receiverRuleList[receiverRuleList.length.sub(1)];
-        receiverRuleList.pop();
-        break;
-      }
-    }
+    ReceiverRule storage removedReceiverRule = receiverRuleList[_index];
+    receiverRuleList[_index] = receiverRuleList[receiverRuleList.length.sub(1)];
+    receiverRuleList.pop();
+    emit AlphaReleaseRuleRemoved(_index, address(removedReceiverRule.receiver), address(removedReceiverRule.rule));
   }
 
   /**
-   * @dev get the release rule of the receiver
-   * @param _receiver the receiver to get the release rule
+   * @dev get receiverRuleList length
+   * @return get receiverRuleList length
    */
-  function getReleaseRule(IAlphaReceiver _receiver) external view returns (IAlphaReleaseRule) {
-    for (uint256 i = 0; i < receiverRuleList.length; i++) {
-      if (address(receiverRuleList[i].receiver) == address(_receiver)) {
-        return receiverRuleList[i].rule;
-      }
-    }
+  function getreceiverRuleListLength() external view returns (uint256) {
+    return receiverRuleList.length;
   }
 
   /**

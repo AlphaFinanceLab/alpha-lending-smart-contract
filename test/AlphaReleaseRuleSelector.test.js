@@ -39,6 +39,10 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (await this.selector.receiverRuleList.call(1)).rule.valueOf(),
       this.rule2.address
     );
+    assert.equal(
+      (await this.selector.getreceiverRuleListLength()).valueOf(),
+      "2"
+    );
   });
 
   it("Should add rule and set rule to the receiver correctly (remove first element)", async () => {
@@ -47,8 +51,8 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     await this.selector.setAlphaReleaseRule(this.receiver2.address, this.rule2.address);
     await this.selector.setAlphaReleaseRule(this.receiver3.address, this.rule3.address);
 
-    // Remove receiver#1
-    await this.selector.removeAlphaReleaseRule(this.receiver1.address);
+    // Remove receiver#1 -> index = 0
+    await this.selector.removeAlphaReleaseRule(0);
     // receiver#3 replace #1
     assert.equal(
       (await this.selector.receiverRuleList.call(0)).receiver.valueOf(),
@@ -58,6 +62,10 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (await this.selector.receiverRuleList.call(1)).receiver.valueOf(),
       this.receiver2.address
     );
+    assert.equal(
+      (await this.selector.getreceiverRuleListLength()).valueOf(),
+      "2"
+    );
   });
 
   it("Should add rule and set rule to the receiver correctly (remove last element)", async () => {
@@ -66,8 +74,8 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     await this.selector.setAlphaReleaseRule(this.receiver2.address, this.rule2.address);
     await this.selector.setAlphaReleaseRule(this.receiver3.address, this.rule3.address);
 
-    // Remove receiver#3
-    await this.selector.removeAlphaReleaseRule(this.receiver3.address);
+    // Remove receiver#3 -> index = 2
+    await this.selector.removeAlphaReleaseRule(2);
     assert.equal(
       (await this.selector.receiverRuleList.call(0)).receiver.valueOf(),
       this.receiver1.address
@@ -75,6 +83,10 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     assert.equal(
       (await this.selector.receiverRuleList.call(1)).receiver.valueOf(),
       this.receiver2.address
+    );
+    assert.equal(
+      (await this.selector.getreceiverRuleListLength()).valueOf(),
+      "2"
     );
   });
 
@@ -84,8 +96,8 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     await this.selector.setAlphaReleaseRule(this.receiver2.address, this.rule2.address);
     await this.selector.setAlphaReleaseRule(this.receiver3.address, this.rule3.address);
 
-    // Remove receiver#2
-    await this.selector.removeAlphaReleaseRule(this.receiver2.address);
+    // Remove receiver#2 -> index = 1
+    await this.selector.removeAlphaReleaseRule(1);
     assert.equal(
       (await this.selector.receiverRuleList.call(0)).receiver.valueOf(),
       this.receiver1.address
@@ -93,6 +105,10 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     assert.equal(
       (await this.selector.receiverRuleList.call(1)).receiver.valueOf(),
       this.receiver3.address
+    );
+    assert.equal(
+      (await this.selector.getreceiverRuleListLength()).valueOf(),
+      "2"
     );
   });
 });

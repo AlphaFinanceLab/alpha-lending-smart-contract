@@ -32,20 +32,24 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
 
   /**
    * @dev emitted on update Alpha release rule 
+   * @param index the index to update
    * @param receiver the address of Alpha receiver
    * @param rule the release rule of Alpha receiver
    */
   event AlphaReleaseRuleUpdated(
+    uint256 indexed index,
     address indexed receiver,
     address indexed rule
   );
 
   /**
    * @dev emitted on remove Alpha release rule
+   * @param index the index to remove
    * @param receiver the address of receiver
    * @param rule the release rule of Alpha receiver 
    */
   event AlphaReleaseRuleRemoved(
+    uint256 indexed index,
     address indexed receiver,
     address indexed rule
   );
@@ -65,7 +69,8 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
       _rule
     );
     receiverRuleList.push(receiverRule);
-    emit AlphaReleaseRuleUpdated(address(_receiver), address(_rule));
+    uint256 index = receiverRuleList.length.sub(1);
+    emit AlphaReleaseRuleUpdated(index, address(_receiver), address(_rule));
   }
 
   function removeAlphaReleaseRule(uint256 _index)
@@ -75,7 +80,7 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
     ReceiverRule storage removedReceiverRule = receiverRuleList[_index];
     receiverRuleList[_index] = receiverRuleList[receiverRuleList.length.sub(1)];
     receiverRuleList.pop();
-    emit AlphaReleaseRuleRemoved(address(removedReceiverRule.receiver), address(removedReceiverRule.rule));
+    emit AlphaReleaseRuleRemoved(_index, address(removedReceiverRule.receiver), address(removedReceiverRule.rule));
   }
 
   /**

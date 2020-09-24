@@ -38,14 +38,41 @@ contract("VestingAlpha", ([creator, alice, bob]) => {
       assert.equal((await this.alphaToken.balanceOf(this.vestingAlpha.address)).valueOf(), "1500");
 
       await this.vestingAlpha.createReceipt({from: alice});
-      const receipt = await this.vestingAlpha.receipts(0);
-      assert.equal((await this.vestingAlpha.userAccumulatedAlpha(alice)).valueOf(), "0");
-      assert.equal(receipt.recipient.valueOf(), alice);
-      assert.equal(receipt.amount.valueOf(), "1500");
+
+      const receiptLength = await this.vestingAlpha.getUserReceiptsLength(alice);
+      for (let index = 0; index < receiptLength; index++) {
+        const receiptID = await this.vestingAlpha.userReceipts(alice, index);
+        const receipt = await this.vestingAlpha.receipts(receiptID);
+        assert.equal((await this.vestingAlpha.userAccumulatedAlpha(alice)).valueOf(), "0");
+        assert.equal(receipt.recipient.valueOf(), alice);
+        assert.equal(receipt.amount.valueOf(), "1500");
+      }
 
       assert.equal((await this.alphaToken.balanceOf(creator)).valueOf(), "9998500");
       assert.equal((await this.alphaToken.balanceOf(this.vestingAlpha.address)).valueOf(), "1500");
       assert.equal((await this.alphaToken.balanceOf(alice)).valueOf(), "0");
+    });
+
+    it("Should get all receipts of Alice", async () => {
+      const receiptAmount = ["500", "1000", "3000"];
+
+      for (const amount of receiptAmount) {
+        await this.alphaToken.approve(this.vestingAlpha.address, amount);
+        await this.vestingAlpha.accumulateAlphaToUser(alice, amount);
+        // alice create receipt
+        await this.vestingAlpha.createReceipt({from: alice});
+      }
+
+      const receiptLength = await this.vestingAlpha.getUserReceiptsLength(alice);
+      assert.equal(receiptLength, "3");
+
+      for (let index = 0; index < receiptLength; index++) {
+        const receiptID = await this.vestingAlpha.userReceipts(alice, index);
+        const receipt = await this.vestingAlpha.receipts(receiptID);
+        assert.equal((await this.vestingAlpha.userAccumulatedAlpha(alice)).valueOf(), "0");
+        assert.equal(receipt.recipient.valueOf(), alice);
+        assert.equal(receipt.amount.valueOf(), receiptAmount[index]);
+      }
     });
 
     it("Shouldn't crate receipt if user don't have accumulate Alpha token", async () => {

@@ -55,6 +55,8 @@ contract VestingAlpha is IVestingAlpha, ReentrancyGuard {
   uint256 public vestingDuration;
   // user => accumulate Alpha
   mapping(address => uint256) public userAccumulatedAlpha;
+  // user => receiptIDs
+  mapping(address => uint256[]) public userReceipts;
 
   constructor(AlphaToken _alphaToken, uint256 _vestingDuration) public {
     alphaToken = _alphaToken;
@@ -82,6 +84,7 @@ contract VestingAlpha is IVestingAlpha, ReentrancyGuard {
       Receipt({recipient: msg.sender, amount: amount, createdAt: now, claimedAmount: 0})
     );
     userAccumulatedAlpha[msg.sender] = 0;
+    userReceipts[msg.sender].push(receipts.length.sub(1));
     emit ReceiptCreated(receipts.length.sub(1), msg.sender, amount);
     return receipts.length.sub(1);
   }
@@ -102,5 +105,13 @@ contract VestingAlpha is IVestingAlpha, ReentrancyGuard {
     receipt.claimedAmount = receipt.claimedAmount.add(pending);
     alphaToken.transfer(receipt.recipient, pending);
     emit ReceiptClaimed(_receiptID, pending);
+  }
+
+  /**
+   * @dev get length of user receipt array
+   * @param _user the user address
+   */
+  function getUserReceiptsLength(address _user) external view returns (uint256) {
+    return userReceipts[_user].length;
   }
 }

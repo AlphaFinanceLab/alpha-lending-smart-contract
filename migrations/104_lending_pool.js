@@ -20,7 +20,7 @@ module.exports = async (deployer, network, accounts) => {
     await deployer.deploy(LendingPool, alTokenDeployer.address);
     const lendingPool = await LendingPool.deployed();
 
-    const bandOracle = await BandPriceOracle.deployed();
+    const bandOracle = await BandPriceOracle.at("0x001448aA24dd61c9dE6dCBbF88D1F3EA41b17ADb");
     await lendingPool.setPriceOracle(bandOracle.address);
     await lendingPool.setReservePercent("100000000000000000");
     let tokenAddresses = {};

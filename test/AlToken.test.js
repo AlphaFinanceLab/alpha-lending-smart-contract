@@ -89,8 +89,9 @@ contract("AlToken", (accounts) => {
     // ----------------------------------------------------------
     // alToken receives 10 Alpha tokens 💸
     const receivedAlphaTokan = BigNumber(10).times(WAD);
-    await alphaToken.approve(alToken.address, receivedAlphaTokan, {from: creator});
-    await alToken.receiveAlpha(receivedAlphaTokan, {from: lendingPool.address});
+    await alphaToken.transfer(lendingInstance.address, receivedAlphaTokan, { from: creator });
+    await alphaToken.approve(alToken.address, receivedAlphaTokan, {from: lendingInstance.address});
+    await alToken.receiveAlpha(receivedAlphaTokan, {from: lendingInstance.address});
     assert.equal((await alphaToken.balanceOf(alToken.address)).valueOf(), "10000000000000000000");
 
     // alphaMultiplier = (10 * 10^18) * 10^12 / (2 * 10^18) = 5 * 10 ^12
@@ -116,8 +117,9 @@ contract("AlToken", (accounts) => {
     // ----------------------------------------------------------
     // alToken receives 6 Alpha tokens 💸 #2
     const receivedAlphaTokan2 = BigNumber(6).times(WAD);
+    await alphaToken.transfer(lendingInstance.address, receivedAlphaTokan2, { from: creator });
     await alphaToken.approve(alToken.address, receivedAlphaTokan2, {from: creator});
-    await alToken.receiveAlpha(receivedAlphaTokan2, {from: creator});
+    await alToken.receiveAlpha(receivedAlphaTokan2, {from: lendingInstance.address});
 
     // alphaMultiplier = 5*10^12 + ((6*10^18 * 10^12) / 3.6 * 10^18) = 6666666666666 * 10^12
 
@@ -131,8 +133,9 @@ contract("AlToken", (accounts) => {
 
     // alToken receives 10 Alpha tokens 💸 #3
     const receivedAlphaTokan3 = BigNumber(10).times(WAD);
-    await alphaToken.approve(alToken.address, receivedAlphaTokan3, {from: creator});
-    await alToken.receiveAlpha(receivedAlphaTokan3, {from: creator});
+    await alphaToken.transfer(lendingInstance.address, receivedAlphaTokan3, { from: creator });
+    await alphaToken.approve(alToken.address, receivedAlphaTokan3, {from: lendingInstance.address});
+    await alToken.receiveAlpha(receivedAlphaTokan3, {from: lendingInstance.address});
 
     // alphaMultiplier = 6666666666666 + ((10*10^18 * 10^12) / 4.6 * 10^18) = 8840579710144
 

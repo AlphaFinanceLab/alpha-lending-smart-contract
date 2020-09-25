@@ -1,11 +1,16 @@
 const AlphaStakePool = artifacts.require("./AlphaStakePool.sol");
 const AlphaToken = artifacts.require("./AlphaToken.sol");
 const VestingAlpha = artifacts.require("VestingAlpha");
+const MockLendingPool = artifacts.require("MockLendingPool");
+const AlTokenDeployer = artifacts.require("AlTokenDeployer");
+const MockAlphaDistributor = artifacts.require("MockAlphaDistributor");
+const AlphaReleaseRuleSelector = artifacts.require("AlphaReleaseRuleSelector");
 const truffleAssert = require("truffle-assertions");
 const {time} = require("@openzeppelin/test-helpers");
 const BigNumber = require("bignumber.js");
 const chai = require("chai");
 const {expect, assert} = require("chai");
+const {lendingPool} = require("./LendingPoolWithAlphaDistributor.test");
 chai.use(require("chai-bignumber")(BigNumber));
 
 contract("AlphaStakePool", (accounts) => {
@@ -14,10 +19,19 @@ contract("AlphaStakePool", (accounts) => {
   let alphaToken;
   let vestingAlpha;
   let alphaStakePool;
+  let lendingInstance;
+  let alphaDistributor;
   beforeEach(async () => {
-    alphaToken = await AlphaToken.new(10000000);
+    alphaToken = await AlphaToken.new("10000000000000000000");
+    alTokenDeployer = await AlTokenDeployer.new();
+    lendingInstance = await MockLendingPool.new(alTokenDeployer.address);
     vestingAlpha = await VestingAlpha.new(alphaToken.address, LOCK_TIME);
-    alphaStakePool = await AlphaStakePool.new(alphaToken.address);
+    alphaStakePool = await AlphaStakePool.new(alphaToken.address, lendingInstance.address);
+
+    const rules = await AlphaReleaseRuleSelector.new();
+    alphaDistributor = await MockAlphaDistributor.new(alphaToken.address, rules.address);
+    await alphaToken.transfer(alphaDistributor.address, "10000000");
+    await lendingInstance.setDistributor(alphaDistributor.address);
   });
 
   it(`Should stake alpha token correctly, Alice is the first staker`, async () => {
@@ -118,8 +132,8 @@ contract("AlphaStakePool", (accounts) => {
     await alphaStakePool.stake(stakeAmount, {from: alice});
 
     // Receive 300 alpha tokens
-    await alphaToken.approve(alphaStakePool.address, "300");
-    await alphaStakePool.receiveAlpha("300");
+    await alphaToken.transfer(alphaDistributor.address, "300", {from: creator});
+    await alphaDistributor.giveAlphaToStakePool(alphaStakePool.address, "300");
 
     // alice unstake 100 tokens
     await alphaStakePool.unstake(unstakeShares, {from: alice});
@@ -194,9 +208,8 @@ contract("AlphaStakePool", (accounts) => {
 
   it(`Should receive alpha token from caller`, async () => {
     const amount = BigNumber(1000);
-    await alphaToken.transfer(alice, amount, {from: creator});
-    await alphaToken.approve(alphaStakePool.address, amount, {from: alice});
-    await alphaStakePool.receiveAlpha(amount, {from: alice});
+    await alphaToken.transfer(alphaDistributor.address, amount, {from: creator});
+    await alphaDistributor.giveAlphaToStakePool(alphaStakePool.address, amount);
 
     const stakePoolAlphaBalance = await alphaToken.balanceOf(alphaStakePool.address);
     expect(BigNumber(stakePoolAlphaBalance)).to.be.bignumber.eq(

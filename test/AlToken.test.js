@@ -1,5 +1,5 @@
 const AlToken = artifacts.require("./AlToken.sol");
-const MockLendingPool = artifacts.require("./MockLendingPool.sol");
+const MockLendingPoolLight = artifacts.require("./MockLendingPoolLight.sol");
 const AlTokenDeployer = artifacts.require("./AlTokenDeployer.sol");
 const DefaultPoolConfiguration = artifacts.require("./DefaultPoolConfiguration.sol");
 const AlphaToken = artifacts.require("./AlphaToken.sol");
@@ -11,6 +11,7 @@ const truffleAssert = require("truffle-assertions");
 const {WAD} = require("./helper.js");
 const chai = require("chai");
 const {expect, assert} = require("chai");
+const {lendingPool} = require("./LendingPoolWithAlphaDistributor.test.js");
 chai.use(require("chai-bignumber")(BigNumber));
 
 contract("AlToken", (accounts) => {
@@ -28,7 +29,7 @@ contract("AlToken", (accounts) => {
 
   beforeEach(async () => {
     alTokenDeployer = await AlTokenDeployer.new();
-    lendingInstance = await MockLendingPool.new(alTokenDeployer.address);
+    lendingInstance = await MockLendingPoolLight.new(alTokenDeployer.address);
     bnbToken = await BNBToken.new();
     const defaultPoolConfig = await DefaultPoolConfiguration.new(
       BASE_BORROW_RATE,
@@ -88,8 +89,8 @@ contract("AlToken", (accounts) => {
     // ----------------------------------------------------------
     // alToken receives 10 Alpha tokens 💸
     const receivedAlphaTokan = BigNumber(10).times(WAD);
-    await alphaToken.approve(alToken.address, receivedAlphaTokan, {from: creator});
-    await alToken.receiveAlpha(receivedAlphaTokan, {from: creator});
+    await alphaToken.transfer(lendingInstance.address, receivedAlphaTokan, {from: creator});
+    await lendingInstance.giveAlphaToAlToken(bnbToken.address, receivedAlphaTokan);
     assert.equal((await alphaToken.balanceOf(alToken.address)).valueOf(), "10000000000000000000");
 
     // alphaMultiplier = (10 * 10^18) * 10^12 / (2 * 10^18) = 5 * 10 ^12
@@ -115,8 +116,8 @@ contract("AlToken", (accounts) => {
     // ----------------------------------------------------------
     // alToken receives 6 Alpha tokens 💸 #2
     const receivedAlphaTokan2 = BigNumber(6).times(WAD);
-    await alphaToken.approve(alToken.address, receivedAlphaTokan2, {from: creator});
-    await alToken.receiveAlpha(receivedAlphaTokan2, {from: creator});
+    await alphaToken.transfer(lendingInstance.address, receivedAlphaTokan2, {from: creator});
+    await lendingInstance.giveAlphaToAlToken(bnbToken.address, receivedAlphaTokan2);
 
     // alphaMultiplier = 5*10^12 + ((6*10^18 * 10^12) / 3.6 * 10^18) = 6666666666666 * 10^12
 
@@ -130,8 +131,8 @@ contract("AlToken", (accounts) => {
 
     // alToken receives 10 Alpha tokens 💸 #3
     const receivedAlphaTokan3 = BigNumber(10).times(WAD);
-    await alphaToken.approve(alToken.address, receivedAlphaTokan3, {from: creator});
-    await alToken.receiveAlpha(receivedAlphaTokan3, {from: creator});
+    await alphaToken.transfer(lendingInstance.address, receivedAlphaTokan3, {from: creator});
+    await lendingInstance.giveAlphaToAlToken(bnbToken.address, receivedAlphaTokan3);
 
     // alphaMultiplier = 6666666666666 + ((10*10^18 * 10^12) / 4.6 * 10^18) = 8840579710144
 

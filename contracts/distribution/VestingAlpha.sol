@@ -99,8 +99,10 @@ contract VestingAlpha is IVestingAlpha, ReentrancyGuard {
       ? now.sub(receipt.createdAt)
       : vestingDuration;
     uint256 pending = duration.mul(receipt.amount).div(vestingDuration).sub(receipt.claimedAmount);
-    receipt.claimedAmount = receipt.claimedAmount.add(pending);
-    alphaToken.transfer(receipt.recipient, pending);
-    emit ReceiptClaimed(_receiptID, pending);
+    if (pending > 0) {
+      receipt.claimedAmount = receipt.claimedAmount.add(pending);
+      alphaToken.transfer(receipt.recipient, pending);
+      emit ReceiptClaimed(_receiptID, pending);
+    }
   }
 }

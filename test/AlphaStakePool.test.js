@@ -1,11 +1,14 @@
 const AlphaStakePool = artifacts.require("./AlphaStakePool.sol");
 const AlphaToken = artifacts.require("./AlphaToken.sol");
 const VestingAlpha = artifacts.require("VestingAlpha");
+const LendingPool = artifacts.require("LendingPool");
+const AlTokenDeployer = artifacts.require("./AlTokenDeployer.sol");
 const truffleAssert = require("truffle-assertions");
 const {time} = require("@openzeppelin/test-helpers");
 const BigNumber = require("bignumber.js");
 const chai = require("chai");
 const {expect, assert} = require("chai");
+const {lendingPool} = require("./LendingPoolWithAlphaDistributor.test");
 chai.use(require("chai-bignumber")(BigNumber));
 
 contract("AlphaStakePool", (accounts) => {
@@ -16,8 +19,10 @@ contract("AlphaStakePool", (accounts) => {
   let alphaStakePool;
   beforeEach(async () => {
     alphaToken = await AlphaToken.new(10000000);
+    alTokenDeployer = await AlTokenDeployer.new();
+    lendingInstance = await LendingPool.new(alTokenDeployer.address);
     vestingAlpha = await VestingAlpha.new(alphaToken.address, LOCK_TIME);
-    alphaStakePool = await AlphaStakePool.new(alphaToken.address);
+    alphaStakePool = await AlphaStakePool.new(alphaToken.address, lendingPool.address);
   });
 
   it(`Should stake alpha token correctly, Alice is the first staker`, async () => {

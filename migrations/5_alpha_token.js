@@ -22,7 +22,7 @@ module.exports = async (deployer, network, accounts) => {
     const stakingRule = (await AlphaReleaseRule.deployed()).address;
 
     const lendingPool = await LendingPool.deployed();
-    await deployer.deploy(AlphaStakePool, alphaToken.address);
+    await deployer.deploy(AlphaStakePool, alphaToken.address, lendingPool.address);
     const staking = await AlphaStakePool.deployed();
 
     // Deploy AlphaReleaseRuleSelector

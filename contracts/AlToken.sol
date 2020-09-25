@@ -79,7 +79,8 @@ contract AlToken is ERC20, Ownable, IAlphaReceiver, ReentrancyGuard {
    * @dev receive Alpha token from the token distributor
    * @param _amount the amount of Alpha to receive
    */
-  function receiveAlpha(uint256 _amount) external override nonReentrant {
+  function receiveAlpha(uint256 _amount) external override {
+    require(msg.sender == address(lendingPool), "Only lending pool can call receive Alpha");
     lendingPool.distributor().alphaToken().transferFrom(msg.sender, address(this), _amount);
     // Don't change alphaMultiplier if total supply equal zero.
     if (totalSupply() == 0) {

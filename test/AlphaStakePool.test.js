@@ -28,10 +28,7 @@ contract("AlphaStakePool", (accounts) => {
     vestingAlpha = await VestingAlpha.new(alphaToken.address, LOCK_TIME);
     alphaStakePool = await AlphaStakePool.new(alphaToken.address, lendingInstance.address);
 
-    // const lendingRule = await AlphaReleaseRule.new(this.block, 200000, [BigNumber("10000000000000000000")]);
     const rules = await AlphaReleaseRuleSelector.new();
-    // await rules.setAlphaReleaseRule(lendingInstance.address, lendingRule.address);
-
     alphaDistributor = await MockAlphaDistributor.new(alphaToken.address, rules.address);
     await alphaToken.transfer(alphaDistributor.address, "10000000");
     await lendingInstance.setDistributor(alphaDistributor.address);
@@ -212,8 +209,6 @@ contract("AlphaStakePool", (accounts) => {
   it(`Should receive alpha token from caller`, async () => {
     const amount = BigNumber(1000);
     await alphaToken.transfer(alphaDistributor.address, amount, {from: creator});
-    // await alphaToken.approve(alphaStakePool.address, amount, {from: alphaDistributor.address});
-    // await alphaStakePool.receiveAlpha(amount, {from: alphaDistributor.address});
     await alphaDistributor.giveAlphaToStakePool(alphaStakePool.address, amount);
 
     const stakePoolAlphaBalance = await alphaToken.balanceOf(alphaStakePool.address);

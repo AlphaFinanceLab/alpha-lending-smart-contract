@@ -11,6 +11,7 @@ const truffleAssert = require("truffle-assertions");
 const {WAD} = require("./helper.js");
 const chai = require("chai");
 const {expect, assert} = require("chai");
+const { lendingPool } = require("./LendingPoolWithAlphaDistributor.test.js");
 chai.use(require("chai-bignumber")(BigNumber));
 
 contract("AlToken", (accounts) => {
@@ -89,7 +90,7 @@ contract("AlToken", (accounts) => {
     // alToken receives 10 Alpha tokens 💸
     const receivedAlphaTokan = BigNumber(10).times(WAD);
     await alphaToken.approve(alToken.address, receivedAlphaTokan, {from: creator});
-    await alToken.receiveAlpha(receivedAlphaTokan, {from: creator});
+    await alToken.receiveAlpha(receivedAlphaTokan, {from: lendingPool.address});
     assert.equal((await alphaToken.balanceOf(alToken.address)).valueOf(), "10000000000000000000");
 
     // alphaMultiplier = (10 * 10^18) * 10^12 / (2 * 10^18) = 5 * 10 ^12

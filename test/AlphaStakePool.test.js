@@ -17,12 +17,13 @@ contract("AlphaStakePool", (accounts) => {
   let alphaToken;
   let vestingAlpha;
   let alphaStakePool;
+  let lendingInstance;
   beforeEach(async () => {
     alphaToken = await AlphaToken.new(10000000);
     alTokenDeployer = await AlTokenDeployer.new();
     lendingInstance = await LendingPool.new(alTokenDeployer.address);
     vestingAlpha = await VestingAlpha.new(alphaToken.address, LOCK_TIME);
-    alphaStakePool = await AlphaStakePool.new(alphaToken.address, lendingPool.address);
+    alphaStakePool = await AlphaStakePool.new(alphaToken.address, lendingInstance.address);
   });
 
   it(`Should stake alpha token correctly, Alice is the first staker`, async () => {

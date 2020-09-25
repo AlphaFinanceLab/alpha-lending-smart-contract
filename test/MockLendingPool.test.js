@@ -675,7 +675,6 @@ contract("MockLendingPool", (accounts) => {
         pool.liquidityShares
       );
       await lendingInstance.setPool(
-        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -764,7 +763,6 @@ contract("MockLendingPool", (accounts) => {
         pool.liquidityShares
       );
       await lendingInstance.setPool(
-        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -853,7 +851,6 @@ contract("MockLendingPool", (accounts) => {
         pool.liquidityShares
       );
       await lendingInstance.setPool(
-        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -942,7 +939,6 @@ contract("MockLendingPool", (accounts) => {
         pool.liquidityShares
       );
       await lendingInstance.setPool(
-        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -1044,7 +1040,6 @@ contract("MockLendingPool", (accounts) => {
         pool.liquidityShares
       );
       await lendingInstance.setPool(
-        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -1133,7 +1128,6 @@ contract("MockLendingPool", (accounts) => {
         pool.liquidityShares
       );
       await lendingInstance.setPool(
-        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -1262,7 +1256,6 @@ contract("MockLendingPool", (accounts) => {
       pool.liquidityShares
     );
     await lendingInstance.setPool(
-      lendingInstance.address,
       pool.tokenInstance.address,
       pool.totalBorrows,
       pool.totalBorrowShares
@@ -1294,7 +1287,6 @@ contract("MockLendingPool", (accounts) => {
       pool.liquidityShares
     );
     await lendingInstance.setPool(
-      lendingInstance.address,
       pool.tokenInstance.address,
       pool.totalBorrows,
       pool.totalBorrowShares
@@ -1334,7 +1326,6 @@ contract("MockLendingPool", (accounts) => {
       pool.liquidityShares
     );
     await lendingInstance.setPool(
-      lendingInstance.address,
       pool.tokenInstance.address,
       pool.totalBorrows,
       pool.totalBorrowShares

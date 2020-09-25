@@ -233,7 +233,7 @@ contract("LendingPool + AlphaDistributor", (accounts) => {
           );
 
           // mint liquidity to user
-          await this.lendingPool.mintAlTokenToUser(
+          await this.lendingPool.mintAlToken(
             data.tokenInstance.address,
             user.address,
             data.liquidityShares

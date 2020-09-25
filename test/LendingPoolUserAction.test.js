@@ -235,8 +235,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -413,8 +414,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -463,7 +465,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     const tx = await lendingInstance.borrow(bnbToken.address, borrowAmount, {
@@ -559,8 +561,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -609,7 +612,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // time pass 3 months
@@ -726,8 +729,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -776,7 +780,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     await truffleAssert.reverts(
@@ -869,8 +873,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -918,7 +923,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // user borrows bnb tokens from the lending pool
@@ -999,8 +1004,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1036,7 +1042,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     const userBnbBalanceBefore = BigNumber(100).times(WAD);
@@ -1114,8 +1120,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1163,7 +1170,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // mint BNB token to user for repaying
@@ -1250,8 +1257,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1299,7 +1307,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // mint BNB token to user for repaying
@@ -1379,8 +1387,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1428,7 +1437,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // mint BNB token to user for repaying
@@ -1508,8 +1517,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1557,7 +1567,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // mint BNB token to user for repaying
@@ -1654,8 +1664,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1703,7 +1714,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // time pass 3 months
@@ -1846,8 +1857,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1895,7 +1907,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // user withdraws bnb token from the lending pool
@@ -1936,8 +1948,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -1985,7 +1998,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // user withdraws bnb token from the lending pool
@@ -2076,8 +2089,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -2113,7 +2127,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     await truffleAssert.reverts(
@@ -2173,7 +2187,11 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
         pool.tokenInstance.address,
         pool.totalBorrows,
@@ -2220,7 +2238,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     const aliceAccountHealthy = await lendingInstance.isAccountHealthy(alice);
@@ -2272,7 +2290,11 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
         pool.tokenInstance.address,
         pool.totalBorrows,
@@ -2314,7 +2336,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // set pool status to ACTIVE
@@ -2366,7 +2388,11 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
         pool.tokenInstance.address,
         pool.totalBorrows,
@@ -2412,7 +2438,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // set pool status to ACTIVE
@@ -2464,7 +2490,11 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
         pool.tokenInstance.address,
         pool.totalBorrows,
@@ -2505,7 +2535,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // set pool status to ACTIVE
@@ -2568,7 +2598,11 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
         pool.tokenInstance.address,
         pool.totalBorrows,
@@ -2609,7 +2643,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // mint busd to liquidator
@@ -2665,7 +2699,11 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
         pool.tokenInstance.address,
         pool.totalBorrows,
@@ -2711,7 +2749,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // set pool status to ACTIVE
@@ -2923,8 +2961,9 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(
+      await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
+        lendingInstance.address,
         pool.totalLiquidityShares
       );
       await lendingInstance.setPool(
@@ -2955,7 +2994,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, alice, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, alice, data.liquidityShares);
     }
 
     // set pool to active status

@@ -76,11 +76,14 @@ contract AlphaReleaseRuleSelector is Ownable, IAlphaReleaseRuleSelector {
   function removeAlphaReleaseRule(uint256 _index)
     external
     onlyOwner
-  {
+  { 
+    require(_index < receiverRuleList.length, "Index out of range");
     ReceiverRule storage removedReceiverRule = receiverRuleList[_index];
-    receiverRuleList[_index] = receiverRuleList[receiverRuleList.length.sub(1)];
-    receiverRuleList.pop();
     emit AlphaReleaseRuleRemoved(_index, address(removedReceiverRule.receiver), address(removedReceiverRule.rule));
+    if (_index != receiverRuleList.length.sub(1)) {
+      receiverRuleList[_index] = receiverRuleList[receiverRuleList.length.sub(1)];
+    } 
+    receiverRuleList.pop();
   }
 
   /**

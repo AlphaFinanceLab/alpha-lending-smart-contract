@@ -4,6 +4,7 @@ const AlphaReleaseRule = artifacts.require("AlphaReleaseRule");
 const AlphaReleaseRuleSelector = artifacts.require("AlphaReleaseRuleSelector");
 const AlphaToken = artifacts.require("AlphaToken");
 const MockReceiver = artifacts.require("MockAlphaReceiver");
+const truffleAssert = require("truffle-assertions");
 
 contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
   beforeEach(async () => {
@@ -46,7 +47,20 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     await this.selector.setAlphaReleaseRule(this.receiver3.address, this.rule3.address);
 
     // Remove receiver#1 -> index = 0
-    await this.selector.removeAlphaReleaseRule(0);
+    const tx = await this.selector.removeAlphaReleaseRule(0);
+    truffleAssert.eventEmitted(
+      tx,
+      "AlphaReleaseRuleRemoved",
+      (ev) => {
+        return (
+          ev.index.toString() === "0",
+          ev.receiver === this.receiver1.address &&
+          ev.rule === this.rule1.address
+        );
+      },
+      "AlphaReleaseRuleRemoved event should be emitted with correct parameters"
+    );
+
     // receiver#3 replace #1
     assert.equal(
       (await this.selector.receiverRuleList.call(0)).receiver.valueOf(),
@@ -66,7 +80,19 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     await this.selector.setAlphaReleaseRule(this.receiver3.address, this.rule3.address);
 
     // Remove receiver#3 -> index = 2
-    await this.selector.removeAlphaReleaseRule(2);
+    const tx = await this.selector.removeAlphaReleaseRule(2);
+    truffleAssert.eventEmitted(
+      tx,
+      "AlphaReleaseRuleRemoved",
+      (ev) => {
+        return (
+          ev.index.toString() === "2",
+          ev.receiver === this.receiver3.address &&
+          ev.rule === this.rule3.address
+        );
+      },
+      "AlphaReleaseRuleRemoved event should be emitted with correct parameters"
+    );
     assert.equal(
       (await this.selector.receiverRuleList.call(0)).receiver.valueOf(),
       this.receiver1.address
@@ -85,7 +111,20 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
     await this.selector.setAlphaReleaseRule(this.receiver3.address, this.rule3.address);
 
     // Remove receiver#2 -> index = 1
-    await this.selector.removeAlphaReleaseRule(1);
+    const tx = await this.selector.removeAlphaReleaseRule(1);
+    truffleAssert.eventEmitted(
+      tx,
+      "AlphaReleaseRuleRemoved",
+      (ev) => {
+        return (
+          ev.index.toString() === "1",
+          ev.receiver === this.receiver2.address &&
+          ev.rule === this.rule2.address
+        );
+      },
+      "AlphaReleaseRuleRemoved event should be emitted with correct parameters"
+    );
+
     assert.equal(
       (await this.selector.receiverRuleList.call(0)).receiver.valueOf(),
       this.receiver1.address
@@ -95,5 +134,12 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       this.receiver3.address
     );
     assert.equal((await this.selector.getreceiverRuleListLength()).valueOf(), "2");
+  });
+
+  it("Should revert when remove index that out of range", async () => {
+    await truffleAssert.reverts(
+      this.selector.removeAlphaReleaseRule(100),
+      "revert Index out of range"
+    );
   });
 });

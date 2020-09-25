@@ -2190,7 +2190,7 @@ contract("MockLendingPool", (accounts) => {
       await lendingInstance.mintAlToken(
         pool.tokenInstance.address,
         lendingInstance.address,
-        pool.luidityShares
+        pool.liquidityShares
       );
       await lendingInstance.setPool(
         pool.tokenInstance.address,

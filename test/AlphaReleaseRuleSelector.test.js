@@ -35,14 +35,8 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (await this.selector.receiverRuleList.call(1)).receiver.valueOf(),
       this.receiver2.address
     );
-    assert.equal(
-      (await this.selector.receiverRuleList.call(1)).rule.valueOf(),
-      this.rule2.address
-    );
-    assert.equal(
-      (await this.selector.getreceiverRuleListLength()).valueOf(),
-      "2"
-    );
+    assert.equal((await this.selector.receiverRuleList.call(1)).rule.valueOf(), this.rule2.address);
+    assert.equal((await this.selector.getreceiverRuleListLength()).valueOf(), "2");
   });
 
   it("Should add rule and set rule to the receiver correctly (remove first element)", async () => {
@@ -62,10 +56,7 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (await this.selector.receiverRuleList.call(1)).receiver.valueOf(),
       this.receiver2.address
     );
-    assert.equal(
-      (await this.selector.getreceiverRuleListLength()).valueOf(),
-      "2"
-    );
+    assert.equal((await this.selector.getreceiverRuleListLength()).valueOf(), "2");
   });
 
   it("Should add rule and set rule to the receiver correctly (remove last element)", async () => {
@@ -84,10 +75,7 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (await this.selector.receiverRuleList.call(1)).receiver.valueOf(),
       this.receiver2.address
     );
-    assert.equal(
-      (await this.selector.getreceiverRuleListLength()).valueOf(),
-      "2"
-    );
+    assert.equal((await this.selector.getreceiverRuleListLength()).valueOf(), "2");
   });
 
   it("Should add rule and set rule to the receiver correctly (remove middle element)", async () => {
@@ -106,9 +94,6 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (await this.selector.receiverRuleList.call(1)).receiver.valueOf(),
       this.receiver3.address
     );
-    assert.equal(
-      (await this.selector.getreceiverRuleListLength()).valueOf(),
-      "2"
-    );
+    assert.equal((await this.selector.getreceiverRuleListLength()).valueOf(), "2");
   });
 });

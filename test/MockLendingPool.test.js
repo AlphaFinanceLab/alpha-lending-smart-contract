@@ -135,11 +135,12 @@ contract("MockLendingPool", (accounts) => {
     const userLiquidityShares = BigNumber(20);
 
     // mint total borrow amount to the alToken supply
-    await lendingInstance.mintAlTokenToPool(
+    await lendingInstance.mintAlToken(
       pool,
+      lendingInstance.address,
       totalLiquidityShares.minus(userLiquidityShares).times(WAD)
     );
-    await lendingInstance.mintAlTokenToUser(pool, alice, userLiquidityShares.times(WAD));
+    await lendingInstance.mintAlToken(pool, alice, userLiquidityShares.times(WAD));
 
     // mint liquidity to pool
     await bnbToken.mint(lendingInstance.address, totalAvailableLiquidity);
@@ -183,11 +184,12 @@ contract("MockLendingPool", (accounts) => {
     const totalLiquidityShares = BigNumber(45);
 
     // mint total borrow amount to the alToken supply
-    await lendingInstance.mintAlTokenToPool(
+    await lendingInstance.mintAlToken(
       pool,
+      lendingInstance.address,
       totalLiquidityShares.minus(userLiquidityShares).times(WAD)
     );
-    await lendingInstance.mintAlTokenToUser(pool, alice, userLiquidityShares.times(WAD));
+    await lendingInstance.mintAlToken(pool, alice, userLiquidityShares.times(WAD));
 
     // set pool
     await lendingInstance.setPool(pool, totalBorrows, totalBorrowShares);
@@ -219,8 +221,7 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.mint(lendingInstance.address, totalLiquidity);
 
     // mock total liquidity share
-    await lendingInstance.mintAlTokenToPool(pool, totalLiquidityShares);
-
+    await lendingInstance.mintAlToken(pool, lendingInstance.address, totalLiquidityShares);
     const shareAmount = await lendingInstance.calculateRoundDownLiquidityShareAmountExternal(
       pool,
       amount
@@ -243,8 +244,7 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.mint(lendingInstance.address, totalLiquidity);
 
     // mock total liquidity share
-    await lendingInstance.mintAlTokenToPool(pool, totalLiquidityShares);
-
+    await lendingInstance.mintAlToken(pool, lendingInstance.address, totalLiquidityShares);
     const shareAmount = await lendingInstance.calculateRoundDownLiquidityShareAmountExternal(
       pool,
       amount
@@ -267,8 +267,7 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.mint(lendingInstance.address, totalLiquidity);
 
     // mock total liquidity share
-    await lendingInstance.mintAlTokenToPool(pool, totalLiquidityShares);
-
+    await lendingInstance.mintAlToken(pool, lendingInstance.address, totalLiquidityShares);
     const shareAmount = await lendingInstance.calculateRoundUpLiquidityShareAmountExternal(
       pool,
       amount
@@ -291,8 +290,7 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.mint(lendingInstance.address, totalLiquidity);
 
     // mock total liquidity share
-    await lendingInstance.mintAlTokenToPool(pool, totalLiquidityShares);
-
+    await lendingInstance.mintAlToken(pool, lendingInstance.address, totalLiquidityShares);
     const shareAmount = await lendingInstance.calculateRoundUpLiquidityShareAmountExternal(
       pool,
       amount
@@ -315,8 +313,7 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.mint(lendingInstance.address, totalLiquidity);
 
     // mock total liquidity share
-    await lendingInstance.mintAlTokenToPool(pool, totalLiquidityShares);
-
+    await lendingInstance.mintAlToken(pool, lendingInstance.address, totalLiquidityShares);
     const shareAmount = await lendingInstance.calculateRoundUpLiquidityShareAmountExternal(
       pool,
       amount
@@ -339,8 +336,7 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.mint(lendingInstance.address, totalLiquidity);
 
     // mock total liquidity share
-    await lendingInstance.mintAlTokenToPool(pool, totalLiquidityShares);
-
+    await lendingInstance.mintAlToken(pool, lendingInstance.address, totalLiquidityShares);
     const shareAmount = await lendingInstance.calculateRoundUpLiquidityShareAmountExternal(
       pool,
       amount
@@ -489,8 +485,7 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.mint(lendingInstance.address, totalLiquidity);
 
     // mock total liquidity share
-    await lendingInstance.mintAlTokenToPool(pool, totalLiquidityShares);
-
+    await lendingInstance.mintAlToken(pool, lendingInstance.address, totalLiquidityShares);
     const amount = await lendingInstance.calculateRoundDownLiquidityAmountExternal(
       pool,
       shareAmount
@@ -674,8 +669,13 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
+        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -716,7 +716,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, bob, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, bob, data.liquidityShares);
     }
 
     // totalBorrowBalanceBase = 35000000000000000000
@@ -758,8 +758,13 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
+        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -800,7 +805,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, bob, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, bob, data.liquidityShares);
     }
 
     // totalBorrowBalanceBase = 90000000000000000000
@@ -842,8 +847,13 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
+        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -884,7 +894,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, bob, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, bob, data.liquidityShares);
     }
 
     // totalBorrowBalanceBase = 85000000000000000000
@@ -926,8 +936,13 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
+        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -981,7 +996,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, bob, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, bob, data.liquidityShares);
     }
 
     // totalBorrowBalanceBase = 85000000000000000000
@@ -1023,8 +1038,13 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
+        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -1065,7 +1085,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, bob, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, bob, data.liquidityShares);
     }
 
     const isAccountHealthy = await lendingInstance.isAccountHealthy(bob);
@@ -1107,8 +1127,13 @@ contract("MockLendingPool", (accounts) => {
       await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
       // mock total supply of alToken
-      await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+      await lendingInstance.mintAlToken(
+        pool.tokenInstance.address,
+        lendingInstance.address,
+        pool.liquidityShares
+      );
       await lendingInstance.setPool(
+        lendingInstance.address,
         pool.tokenInstance.address,
         pool.totalBorrows,
         pool.totalBorrowShares
@@ -1149,7 +1174,7 @@ contract("MockLendingPool", (accounts) => {
       );
 
       // mint liquidity to user
-      await lendingInstance.mintAlTokenToUser(data.poolAddress, bob, data.liquidityShares);
+      await lendingInstance.mintAlToken(data.poolAddress, bob, data.liquidityShares);
     }
 
     const isAccountHealthy = await lendingInstance.isAccountHealthy(bob);
@@ -1231,8 +1256,13 @@ contract("MockLendingPool", (accounts) => {
     };
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.liquidityShares
+    );
     await lendingInstance.setPool(
+      lendingInstance.address,
       pool.tokenInstance.address,
       pool.totalBorrows,
       pool.totalBorrowShares
@@ -1258,8 +1288,13 @@ contract("MockLendingPool", (accounts) => {
     };
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.liquidityShares
+    );
     await lendingInstance.setPool(
+      lendingInstance.address,
       pool.tokenInstance.address,
       pool.totalBorrows,
       pool.totalBorrowShares
@@ -1293,8 +1328,13 @@ contract("MockLendingPool", (accounts) => {
     };
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.liquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.liquidityShares
+    );
     await lendingInstance.setPool(
+      lendingInstance.address,
       pool.tokenInstance.address,
       pool.totalBorrows,
       pool.totalBorrowShares

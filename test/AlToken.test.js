@@ -76,9 +76,9 @@ contract("AlToken", (accounts) => {
     const bobAmount1 = BigNumber(1).times(WAD);
 
     // alice receive alBNB Token #1
-    await lendingInstance.mintAlTokenToUser(bnbToken.address, alice, aliceAmount1);
+    await lendingInstance.mintAlToken(bnbToken.address, alice, aliceAmount1);
     // bob receive alBNB Token #1
-    await lendingInstance.mintAlTokenToUser(bnbToken.address, bob, bobAmount1);
+    await lendingInstance.mintAlToken(bnbToken.address, bob, bobAmount1);
 
     assert.equal((await alToken.balanceOf(alice)).valueOf(), aliceAmount1.toString());
     assert.equal((await alphaToken.balanceOf(alice)).valueOf(), "0");
@@ -97,7 +97,7 @@ contract("AlToken", (accounts) => {
     // ----------------------------------------------------------
     // alice receive alToken #2
     const aliceAmount2 = BigNumber(2).times(WAD);
-    await lendingInstance.mintAlTokenToUser(bnbToken.address, alice, aliceAmount2);
+    await lendingInstance.mintAlToken(bnbToken.address, alice, aliceAmount2);
     aliceAlpha = await alphaToken.balanceOf(alice);
     // alice got 5 alpha tokens from 1 alToken (first deposit)
     assert.equal((await alphaToken.balanceOf(alice)).valueOf(), "5000000000000000000");
@@ -123,7 +123,7 @@ contract("AlToken", (accounts) => {
     // ----------------------------------------------------------
     // bob mint alToken #4
     const bobAmount4 = BigNumber(1).times(WAD);
-    await lendingInstance.mintAlTokenToUser(bnbToken.address, bob, bobAmount4);
+    await lendingInstance.mintAlToken(bnbToken.address, bob, bobAmount4);
     // bob should get alpha = (5*10^18) +(0.6 * 10^18) * 6.666 - (0.6) * 5 = 5999999999999600000
     assert.equal((await alphaToken.balanceOf(bob)).valueOf(), "5999999999999600000");
     assert.equal((await alToken.balanceOf(bob)).valueOf(), "1600000000000000000");

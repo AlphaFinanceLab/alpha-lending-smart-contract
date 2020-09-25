@@ -55,19 +55,20 @@ contract AlphaReleaseRule is Ownable, IAlphaReleaseRule {
     returns (uint256)
   {
     uint256 lastBlock = startBlock.add(tokensPerBlock.length.mul(blockPerWeek));
-    if (_toBlock <= startBlock || lastBlock <= _fromBlock) {
+    if (_fromBlock >= _toBlock || _toBlock <= startBlock || lastBlock <= _fromBlock) {
       return 0;
     }
     uint256 fromBlock = _fromBlock > startBlock ? _fromBlock : startBlock;
     uint256 toBlock = _toBlock < lastBlock ? _toBlock : lastBlock;
     uint256 week = findWeekByBlockNumber(fromBlock);
+    uint256 nextWeekBlock = findNextWeekFirstBlock(fromBlock);
     uint256 totalAmount = 0;
     while (fromBlock < toBlock) {
-      uint256 nextWeekBlock = findNextWeekFirstBlock(fromBlock);
       nextWeekBlock = toBlock < nextWeekBlock ? toBlock : nextWeekBlock;
       totalAmount = totalAmount.add(nextWeekBlock.sub(fromBlock).mul(tokensPerBlock[week]));
       week = week.add(1);
       fromBlock = nextWeekBlock;
+      nextWeekBlock = nextWeekBlock.add(blockPerWeek);
     }
     return totalAmount;
   }

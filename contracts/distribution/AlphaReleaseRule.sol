@@ -63,11 +63,11 @@ contract AlphaReleaseRule is Ownable, IAlphaReleaseRule {
     uint256 week = findWeekByBlockNumber(fromBlock);
     uint256 totalAmount = 0;
     while (fromBlock < toBlock) {
-      uint256 lastBlockInWeek = findLastBlockOnThisWeek(fromBlock);
-      lastBlockInWeek = toBlock < lastBlockInWeek ? toBlock : lastBlockInWeek;
-      totalAmount = totalAmount.add(lastBlockInWeek.sub(fromBlock).mul(tokensPerBlock[week]));
+      uint256 nextWeekBlock = findNextWeekFirstBlock(fromBlock);
+      nextWeekBlock = toBlock < nextWeekBlock ? toBlock : nextWeekBlock;
+      totalAmount = totalAmount.add(nextWeekBlock.sub(fromBlock).mul(tokensPerBlock[week]));
       week = week.add(1);
-      fromBlock = lastBlockInWeek;
+      fromBlock = nextWeekBlock;
     }
     return totalAmount;
   }
@@ -82,14 +82,14 @@ contract AlphaReleaseRule is Ownable, IAlphaReleaseRule {
   }
 
   /**
-   * @dev find the last block on this week.
+   * @dev find the next week first block of this block.
    * |--------------------------|      |--------------------------|
    * 10                         20     21                         30
    *                       |--18
-   * the last block of week that block#18 contains is block#20
-   * @param _block the block number to find last block on this week
+   * the next week first block of block#18 is block#20
+   * @param _block the block number to find the next week first block
    */
-  function findLastBlockOnThisWeek(uint256 _block) public view returns (uint256) {
+  function findNextWeekFirstBlock(uint256 _block) public view returns (uint256) {
     require(_block >= startBlock, "the block number must more than or equal start block");
     return
       _block.sub(startBlock).div(blockPerWeek).mul(blockPerWeek).add(blockPerWeek).add(startBlock);

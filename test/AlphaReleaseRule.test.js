@@ -144,32 +144,32 @@ contract("AlphaReleaseRule", (accounts) => {
     );
   });
 
-  it(`Should find last block of current week correctly (first block)`, async () => {
+  it(`Should find next week frist block of current week correctly (first block)`, async () => {
     //     |-----------------------|       |-----------------------|      |-----------------------|
     // 10  11                 17290        17291               34570      34571               51850
-    const nextWeekBlock = await defaultAlphaReleaseRule.findLastBlockOnThisWeek(34570);
+    const nextWeekBlock = await defaultAlphaReleaseRule.findNextWeekFirstBlock(34570);
     expect(BigNumber(nextWeekBlock)).to.be.bignumber.eq(51850, "Invalid block separator");
   });
 
-  it(`Should find last block of current week correctly (middle)`, async () => {
+  it(`Should find next week frist block of current week correctly (middle)`, async () => {
     //     |-----------------------|       |-----------------------|      |-----------------------|
     // 10  11                 17290        17291               34570      34571               51850
-    const nextWeekBlock = await defaultAlphaReleaseRule.findLastBlockOnThisWeek(17291);
+    const nextWeekBlock = await defaultAlphaReleaseRule.findNextWeekFirstBlock(17291);
     expect(BigNumber(nextWeekBlock)).to.be.bignumber.eq(34570, "Invalid block separator");
   });
 
-  it(`Should find last block of current week correctly (last block)`, async () => {
+  it(`Should find next week frist block of current week correctly (last block)`, async () => {
     //     |-----------------------|       |-----------------------|      |-----------------------|
     // 10  11                  17290       17291               34570      34571               51850
-    const nextWeekBlock = await defaultAlphaReleaseRule.findLastBlockOnThisWeek(51849);
+    const nextWeekBlock = await defaultAlphaReleaseRule.findNextWeekFirstBlock(51849);
     expect(BigNumber(nextWeekBlock)).to.be.bignumber.eq(51850, "Invalid block separator");
   });
 
-  it(`Should revert when find last block of current week (the block is less than start block)`, async () => {
+  it(`Should revert when find next week frist block of current week (the block is less than start block)`, async () => {
     //     |-----------------------|       |-----------------------|      |-----------------------|
     // 10  11                  17290        17291              34570      34571               51850
     await truffleAssert.reverts(
-      defaultAlphaReleaseRule.findLastBlockOnThisWeek(3),
+      defaultAlphaReleaseRule.findNextWeekFirstBlock(3),
       "revert the block number must more than or equal start block"
     );
   });

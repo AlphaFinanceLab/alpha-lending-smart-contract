@@ -9,7 +9,8 @@ chai.use(require("chai-bignumber")(BigNumber));
 
 contract("VestingAlpha", ([creator, alice, bob]) => {
   beforeEach(async () => {
-    this.alphaToken = await AlphaToken.new("10000000");
+    this.alphaToken = await AlphaToken.new();
+    await this.alphaToken.mint(creator, "10000000");
     this.vestingAlpha = await VestingAlpha.new(this.alphaToken.address, "604800");
   });
 

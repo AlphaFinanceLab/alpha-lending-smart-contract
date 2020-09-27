@@ -2,6 +2,7 @@
 pragma solidity 0.6.11;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title Alpha token contract
@@ -9,8 +10,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * @author Alpha
  */
 
-contract AlphaToken is ERC20("AlphaToken", "ALPHA") {
-  constructor(uint256 _totalSupply) public {
-    _mint(msg.sender, _totalSupply);
+contract AlphaToken is ERC20("AlphaToken", "ALPHA"), Ownable {
+  function mint(address _to, uint256 _value) public onlyOwner {
+    _mint(_to, _value);
   }
 }

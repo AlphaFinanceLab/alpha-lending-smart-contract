@@ -726,7 +726,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
 
     // 1. calculate liquidity share amount
     uint256 shareAmount = calculateRoundDownLiquidityShareAmount(_token, _amount);
-  
+
     // 2. mint alToken to user equal to liquidity share amount
     pool.alToken.mint(msg.sender, shareAmount);
 
@@ -969,7 +969,10 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     require(!isAccountHealthy(_user), "user's account is healthy. can't liquidate this account");
 
     // 2. check if the user enables collateral
-    require(!userCollateralData.disableUseAsCollateral, "user didn't enable the requested collateral");
+    require(
+      !userCollateralData.disableUseAsCollateral,
+      "user didn't enable the requested collateral"
+    );
 
     // 3. check if the token pool enable to use as collateral
     require(

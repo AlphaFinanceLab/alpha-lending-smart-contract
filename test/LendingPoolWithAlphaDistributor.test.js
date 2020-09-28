@@ -83,7 +83,8 @@ contract("LendingPool + AlphaDistributor", (accounts) => {
 
     this.block = (await web3.eth.getBlock("latest")).number + 100;
 
-    this.alphaToken = await AlphaToken.new("100000000000000000000000000");
+    this.alphaToken = await AlphaToken.new();
+    await this.alphaToken.mint(creator, "100000000000000000000000000");
     const lendingRule = await AlphaReleaseRule.new(this.block, 200000, [BigNumber(10).times(WAD)]);
     const rules = await AlphaReleaseRuleSelector.new();
     await rules.setAlphaReleaseRule(this.lendingPool.address, lendingRule.address);

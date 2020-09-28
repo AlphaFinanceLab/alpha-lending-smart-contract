@@ -8,7 +8,8 @@ const truffleAssert = require("truffle-assertions");
 
 contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
   beforeEach(async () => {
-    this.alphaToken = await AlphaToken.new(100000000000);
+    this.alphaToken = await AlphaToken.new();
+    this.alphaToken.mint(creator, "100000000000");
 
     this.rule1 = await AlphaReleaseRule.new(20, 10, [10, 8, 6]);
     this.rule2 = await AlphaReleaseRule.new(10, 10, [10, 8, 6, 4, 2]);
@@ -54,8 +55,7 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (ev) => {
         return (
           ev.index.toString() === "0",
-          ev.receiver === this.receiver1.address &&
-          ev.rule === this.rule1.address
+          ev.receiver === this.receiver1.address && ev.rule === this.rule1.address
         );
       },
       "AlphaReleaseRuleRemoved event should be emitted with correct parameters"
@@ -87,8 +87,7 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (ev) => {
         return (
           ev.index.toString() === "2",
-          ev.receiver === this.receiver3.address &&
-          ev.rule === this.rule3.address
+          ev.receiver === this.receiver3.address && ev.rule === this.rule3.address
         );
       },
       "AlphaReleaseRuleRemoved event should be emitted with correct parameters"
@@ -118,8 +117,7 @@ contract("AlphaReleaseRuleSelector", ([creator, alice, bob]) => {
       (ev) => {
         return (
           ev.index.toString() === "1",
-          ev.receiver === this.receiver2.address &&
-          ev.rule === this.rule2.address
+          ev.receiver === this.receiver2.address && ev.rule === this.rule2.address
         );
       },
       "AlphaReleaseRuleRemoved event should be emitted with correct parameters"

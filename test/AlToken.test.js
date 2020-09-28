@@ -46,7 +46,8 @@ contract("AlToken", (accounts) => {
 
     const poolData = await lendingInstance.getPool(bnbToken.address);
     alToken = await AlToken.at(poolData.alTokenAddress);
-    alphaToken = await AlphaToken.new(BigNumber(100000).times(WAD));
+    alphaToken = await AlphaToken.new();
+    await alphaToken.mint(creator, BigNumber(100000).times(WAD));
 
     const alphaReleaseRuleSelector = await AlphaReleaseRuleSelector.new();
     const alphaDistributor = await AlphaDistributor.new(

@@ -22,7 +22,8 @@ contract("AlphaStakePool", (accounts) => {
   let lendingInstance;
   let alphaDistributor;
   beforeEach(async () => {
-    alphaToken = await AlphaToken.new("10000000000000000000");
+    alphaToken = await AlphaToken.new();
+    alphaToken.mint(creator, "10000000000000000000");
     alTokenDeployer = await AlTokenDeployer.new();
     lendingInstance = await MockLendingPool.new(alTokenDeployer.address);
     vestingAlpha = await VestingAlpha.new(alphaToken.address, LOCK_TIME);

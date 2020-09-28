@@ -178,7 +178,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
    */
   struct UserPoolData {
     // the user set to used this pool as collateral for borrowing
-    bool useAsCollateral;
+    bool disableUseAsCollateral;
     // borrow shares of the user of this pool. If user didn't borrow this pool then shere will be 0
     uint256 borrowShares;
     // latest alpha multiplier (borrow reward multiplier) of the user of this pool. Using to calculate current borrow reward.
@@ -354,7 +354,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
    */
   function setUserUseAsCollateral(ERC20 _token, bool _useAsCollateral) external {
     UserPoolData storage userData = userPoolData[msg.sender][address(_token)];
-    userData.useAsCollateral = _useAsCollateral;
+    userData.disableUseAsCollateral = !_useAsCollateral;
     // only disable as collateral need to check the account health
     if (!_useAsCollateral) {
       require(isAccountHealthy(msg.sender), "can't set use as collateral, account isn't healthy.");
@@ -422,7 +422,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
   {
     compoundedLiquidityBalance = getUserCompoundedLiquidityBalance(_user, _token);
     compoundedBorrowBalance = getUserCompoundedBorrowBalance(_user, _token);
-    userUsePoolAsCollateral = userPoolData[_user][address(_token)].useAsCollateral;
+    userUsePoolAsCollateral = !userPoolData[_user][address(_token)].disableUseAsCollateral;
   }
 
   /**
@@ -721,24 +721,16 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     updateAlphaReward
   {
     Pool storage pool = pools[address(_token)];
-    UserPoolData storage userData = userPoolData[msg.sender][address(_token)];
     require(pool.status == PoolStatus.ACTIVE, "can't deposit to this pool");
     require(_amount > 0, "deposit amount should more than 0");
 
     // 1. calculate liquidity share amount
     uint256 shareAmount = calculateRoundDownLiquidityShareAmount(_token, _amount);
-
-    // 2. enable use as collateral for the default, if this pool is enabled to use as collateral
-    bool isAllowToUseAsCollateral = pool.poolConfig.getCollateralPercent() != 0;
-    bool isFirstDeposit = pool.alToken.balanceOf(msg.sender) == 0;
-    if (isAllowToUseAsCollateral && isFirstDeposit) {
-      userData.useAsCollateral = true;
-    }
-
-    // 3. mint alToken to user equal to liquidity share amount
+  
+    // 2. mint alToken to user equal to liquidity share amount
     pool.alToken.mint(msg.sender, shareAmount);
 
-    // 4. transfer user deposit liquidity to the pool
+    // 3. transfer user deposit liquidity to the pool
     _token.safeTransferFrom(msg.sender, address(this), _amount);
 
     emit Deposit(address(_token), msg.sender, shareAmount, _amount);
@@ -977,7 +969,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     require(!isAccountHealthy(_user), "user's account is healthy. can't liquidate this account");
 
     // 2. check if the user enables collateral
-    require(userCollateralData.useAsCollateral, "user didn't enable the requested collateral");
+    require(!userCollateralData.disableUseAsCollateral, "user didn't enable the requested collateral");
 
     // 3. check if the token pool enable to use as collateral
     require(

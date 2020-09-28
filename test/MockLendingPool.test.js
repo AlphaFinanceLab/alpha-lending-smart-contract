@@ -1337,6 +1337,6 @@ contract("MockLendingPool", (accounts) => {
     await bnbToken.approve(lendingInstance.address, BigNumber(20).times(WAD), {from: alice});
 
     const userData = await lendingInstance.getUserPoolData(alice, bnbToken.address);
-    assert.equal(userData.userUsePoolAsCollateral, false);
+    assert.equal(userData.userUsePoolAsCollateral, true);
   });
 });

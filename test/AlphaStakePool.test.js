@@ -5,9 +5,11 @@ const MockLendingPool = artifacts.require("MockLendingPool");
 const AlTokenDeployer = artifacts.require("AlTokenDeployer");
 const MockAlphaDistributor = artifacts.require("MockAlphaDistributor");
 const AlphaReleaseRuleSelector = artifacts.require("AlphaReleaseRuleSelector");
+const DefaultPoolConfiguration = artifacts.require("DefaultPoolConfiguration");
 const truffleAssert = require("truffle-assertions");
 const {time} = require("@openzeppelin/test-helpers");
 const BigNumber = require("bignumber.js");
+const {WAD} = require("./helper.js");
 const chai = require("chai");
 const {expect, assert} = require("chai");
 const {lendingPool} = require("./LendingPoolWithAlphaDistributor.test");
@@ -16,7 +18,14 @@ chai.use(require("chai-bignumber")(BigNumber));
 contract("AlphaStakePool", (accounts) => {
   const [creator, alice, bob] = accounts;
   const LOCK_TIME = BigNumber(259200);
+  const BASE_BORROW_RATE = BigNumber(0.1).times(WAD); // 10%
+  const SLOPE1_RATE = BigNumber(0.2).times(WAD); // 20%
+  const SLOPE2_RATE = BigNumber(0.4).times(WAD); // 40%
+  const COLLATERAL_PERCENT = BigNumber(0.75).times(WAD); // 75%
+  const LIQUIDATION_BONUS = BigNumber(1.05).times(WAD); // 105%
+
   let alphaToken;
+  let alAlphaToken;
   let vestingAlpha;
   let alphaStakePool;
   let lendingInstance;
@@ -25,13 +34,26 @@ contract("AlphaStakePool", (accounts) => {
     alphaToken = await AlphaToken.new("10000000000000000000");
     alTokenDeployer = await AlTokenDeployer.new();
     lendingInstance = await MockLendingPool.new(alTokenDeployer.address);
-    vestingAlpha = await VestingAlpha.new(alphaToken.address, LOCK_TIME);
-    alphaStakePool = await AlphaStakePool.new(alphaToken.address, lendingInstance.address);
 
+    // initilize alAlpha token
+    const defaultPoolConfig = await DefaultPoolConfiguration.new(
+      BASE_BORROW_RATE,
+      SLOPE1_RATE,
+      SLOPE2_RATE,
+      COLLATERAL_PERCENT,
+      LIQUIDATION_BONUS
+    );
+    await lendingInstance.initPool(alphaToken.address, defaultPoolConfig.address);
+    const alphaPool = await lendingInstance.getPool(alphaToken.address);
+    alAlphaToken = alphaPool.alToken
+    
     const rules = await AlphaReleaseRuleSelector.new();
     alphaDistributor = await MockAlphaDistributor.new(alphaToken.address, rules.address);
     await alphaToken.transfer(alphaDistributor.address, "10000000");
-    await lendingInstance.setDistributor(alphaDistributor.address);
+
+    vestingAlpha = await VestingAlpha.new(alphaToken.address, LOCK_TIME);
+    alphaStakePool = await AlphaStakePool.new(alphaToken.address, alphaDistributor.address);
+
   });
 
   it(`Should stake alpha token correctly, Alice is the first staker`, async () => {

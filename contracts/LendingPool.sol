@@ -233,7 +233,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
   IPriceOracle priceOracle;
 
   /**
-   * @dev alpha token address contract.
+   * @dev alpha distributor contract.
    */
   IAlphaDistributor public override distributor;
 

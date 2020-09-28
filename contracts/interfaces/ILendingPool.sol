@@ -10,6 +10,7 @@ import "./IVestingAlpha.sol";
  **/
 
 interface ILendingPool {
+
   /**
    * @notice Returns the health status of account.
    **/

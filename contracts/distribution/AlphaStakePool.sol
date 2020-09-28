@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IAlphaReceiver.sol";
 import "../interfaces/IVestingAlpha.sol";
 import "../interfaces/ILendingPool.sol";
-import "./AlphaToken.sol";
+import "../AlToken.sol";
 
 /**
  * @title Alpha staking pool contract
@@ -20,28 +20,35 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
   using SafeMath for uint256;
 
   /**
-   * @dev Alpha token of the staking pool
+   * @dev AlAlpha token
    */
-  AlphaToken public alphaToken;
+  AlToken public alAlphaToken;
   /**
-   * @dev the lending pool of the AlToken
-   */
-  ILendingPool private lendingPool;
+  * @dev alpha distributor contract.
+  */
+  IAlphaDistributor public distributor;
   /**
    * @dev VestingAlpha address
    */
   IVestingAlpha public vestingAlpha;
 
-  constructor(AlphaToken _alphaToken, ILendingPool _lendingPool) public {
-    alphaToken = _alphaToken;
-    lendingPool = _lendingPool;
+  constructor(AlToken _alAlphaToken, IAlphaDistributor _distributor) public {
+    alAlphaToken = _alAlphaToken;
+    distributor = _distributor;
   }
 
   /**
-    @dev set lending pool address
+    @dev set alAlpha token
    */
-  function setLendingPool(ILendingPool _lendingPool) public onlyOwner {
-    lendingPool = _lendingPool;
+  function setAlAlphaToken(AlToken _alAlphaToken) public onlyOwner {
+    alAlphaToken = _alAlphaToken;
+  }
+
+  /**
+    @dev set distributor address
+   */
+  function setDistributor(IAlphaDistributor _distributor) public onlyOwner {
+    distributor = _distributor;
   }
 
   /**
@@ -58,9 +65,9 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    * which can use to clain their Alpha token from the staking pool
    */
   function stake(uint256 _amount) public nonReentrant {
-    uint256 total = alphaToken.balanceOf(address(this));
+    uint256 total = alAlphaToken.balanceOf(address(this));
     uint256 totalShares = totalSupply();
-    alphaToken.transferFrom(msg.sender, address(this), _amount);
+    alAlphaToken.transferFrom(msg.sender, address(this), _amount);
     if (total == 0 || totalShares == 0) {
       _mint(msg.sender, _amount);
     } else {
@@ -76,12 +83,12 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    */
   function unstake(uint256 _share) public nonReentrant {
     uint256 totalShares = totalSupply();
-    uint256 reward = _share.mul(alphaToken.balanceOf(address(this))).div(totalShares);
+    uint256 reward = _share.mul(alAlphaToken.balanceOf(address(this))).div(totalShares);
     _burn(msg.sender, _share);
     if (address(vestingAlpha) == address(0)) {
-      alphaToken.transfer(msg.sender, reward);
+      alAlphaToken.transfer(msg.sender, reward);
     } else {
-      alphaToken.approve(address(vestingAlpha), reward);
+      alAlphaToken.approve(address(vestingAlpha), reward);
       vestingAlpha.accumulateAlphaToUser(msg.sender, reward);
     }
   }
@@ -93,7 +100,7 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    * Alpha token from caller
    */
   function receiveAlpha(uint256 _amount) external override {
-    require(msg.sender == address(lendingPool.distributor()), "Only distributor can call receive Alpha");
-    alphaToken.transferFrom(msg.sender, address(this), _amount);
+    require(msg.sender == address(distributor), "Only distributor can call receive Alpha");
+    alAlphaToken.transferFrom(msg.sender, address(this), _amount);
   }
 }

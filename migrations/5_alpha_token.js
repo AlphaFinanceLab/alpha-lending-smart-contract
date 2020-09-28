@@ -9,11 +9,12 @@ const VestingAlpha = artifacts.require("VestingAlpha");
 const pool1Curve = require("./alpha_pool1_curve.json");
 const pool2Curve = require("./alpha_pool2_curve.json");
 
-module.exports = async (deployer, network, accounts) => {
+module.exports = async (deployer, network, [owner]) => {
   if (network !== "bscdevelop") return;
   deployer.then(async () => {
-    await deployer.deploy(AlphaToken, "100000000000000000000000000");
+    await deployer.deploy(AlphaToken);
     const alphaToken = await AlphaToken.deployed();
+    await alphaToken.mint(owner, "100000000000000000000000000");
 
     await deployer.deploy(AlphaReleaseRule, 1629150, 17280, pool1Curve.alphaTokenPerBlockWeek);
     const lendingRule = (await AlphaReleaseRule.deployed()).address;
@@ -22,7 +23,7 @@ module.exports = async (deployer, network, accounts) => {
     const stakingRule = (await AlphaReleaseRule.deployed()).address;
 
     const lendingPool = await LendingPool.deployed();
-    await deployer.deploy(AlphaStakePool, alphaToken.address);
+    await deployer.deploy(AlphaStakePool, alphaToken.address, lendingPool.address);
     const staking = await AlphaStakePool.deployed();
 
     // Deploy AlphaReleaseRuleSelector

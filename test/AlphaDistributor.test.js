@@ -8,7 +8,8 @@ const MockReceiver = artifacts.require("MockAlphaReceiver");
 
 contract("AlphaDistributor", ([creator, alice, bob]) => {
   beforeEach(async () => {
-    this.alphaToken = await AlphaToken.new(100000000000);
+    this.alphaToken = await AlphaToken.new();
+    this.alphaToken.mint(creator, "100000000000");
 
     this.block = (await web3.eth.getBlock("latest")).number;
 

@@ -74,7 +74,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -109,7 +113,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -143,7 +151,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -178,7 +190,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -214,7 +230,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -250,7 +270,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -286,7 +310,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -322,7 +350,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -358,7 +390,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,
@@ -394,7 +430,11 @@ contract("MockLendingPool", (accounts) => {
     await pool.tokenInstance.mint(lendingInstance.address, pool.totalAvailableLiquidity);
 
     // mock total supply of alToken
-    await lendingInstance.mintAlTokenToPool(pool.tokenInstance.address, pool.totalLiquidityShares);
+    await lendingInstance.mintAlToken(
+      pool.tokenInstance.address,
+      lendingInstance.address,
+      pool.totalLiquidityShares
+    );
     await lendingInstance.setPool(
       pool.tokenInstance.address,
       pool.totalBorrows,

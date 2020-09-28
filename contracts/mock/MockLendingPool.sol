@@ -36,18 +36,9 @@ contract MockLendingPool is LendingPool {
     pool.poolReserves = _amount;
   }
 
-  function mintAlTokenToPool(ERC20 _token, uint256 _amount) external {
+  function mintAlToken(ERC20 _token, address  _recipient, uint256 _amount) external {
     Pool storage pool = pools[address(_token)];
-    pool.alToken.mint(address(this), _amount);
-  }
-
-  function mintAlTokenToUser(
-    ERC20 _token,
-    address _user,
-    uint256 _amount
-  ) external {
-    Pool storage pool = pools[address(_token)];
-    pool.alToken.mint(_user, _amount);
+    pool.alToken.mint(_recipient, _amount);
   }
 
   function burnAlToken(

@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IAlphaReceiver.sol";
 import "../interfaces/IVestingAlpha.sol";
+import "../interfaces/ILendingPool.sol";
 import "./AlphaToken.sol";
 
 /**
@@ -23,12 +24,24 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    */
   AlphaToken public alphaToken;
   /**
+   * @dev the lending pool of the AlToken
+   */
+  ILendingPool private lendingPool;
+  /**
    * @dev VestingAlpha address
    */
   IVestingAlpha public vestingAlpha;
 
-  constructor(AlphaToken _alphaToken) public {
+  constructor(AlphaToken _alphaToken, ILendingPool _lendingPool) public {
     alphaToken = _alphaToken;
+    lendingPool = _lendingPool;
+  }
+
+  /**
+    @dev set lending pool address
+   */
+  function setLendingPool(ILendingPool _lendingPool) public onlyOwner {
+    lendingPool = _lendingPool;
   }
 
   /**
@@ -79,7 +92,8 @@ contract AlphaStakePool is ERC20("AlphaStake", "ALPHASTAKE"), Ownable, IAlphaRec
    * the staking pool receive Alpha token from the caller, this will transfer
    * Alpha token from caller
    */
-  function receiveAlpha(uint256 _amount) external override nonReentrant {
+  function receiveAlpha(uint256 _amount) external override {
+    require(msg.sender == address(lendingPool.distributor()), "Only distributor can call receive Alpha");
     alphaToken.transferFrom(msg.sender, address(this), _amount);
   }
 }

@@ -14,6 +14,7 @@ import "./interfaces/IVestingAlpha.sol";
 import "./AlToken.sol";
 import "./AlTokenDeployer.sol";
 import "./libraries/WadMath.sol";
+import "./libraries/Math.sol";
 
 /**
  * @title Lending pool contract
@@ -25,6 +26,7 @@ import "./libraries/WadMath.sol";
 contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
   using SafeMath for uint256;
   using WadMath for uint256;
+  using Math for uint256;
   using SafeERC20 for ERC20;
 
   /*
@@ -534,8 +536,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     if (pool.totalBorrows == 0 || pool.totalBorrowShares == 0) {
       return _amount;
     }
-    return
-      (_amount.mul(pool.totalBorrowShares)).add(pool.totalBorrows.sub(1)).div(pool.totalBorrows);
+    return _amount.mul(pool.totalBorrowShares).divCeil(pool.totalBorrows);
   }
 
   /**
@@ -578,10 +579,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     if (poolTotalLiquidity == 0 || poolTotalLiquidityShares == 0) {
       return _amount;
     }
-    return
-      (_amount.mul(poolTotalLiquidityShares).add(poolTotalLiquidity.sub(1))).div(
-        poolTotalLiquidity
-      );
+    return _amount.mul(poolTotalLiquidityShares).divCeil(poolTotalLiquidity);
   }
 
   /**
@@ -622,10 +620,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     if (pool.totalBorrows == 0 || pool.totalBorrowShares == 0) {
       return _shareAmount;
     }
-    return
-      _shareAmount.mul(pool.totalBorrows).add(pool.totalBorrowShares.sub(1)).div(
-        pool.totalBorrowShares
-      );
+    return _shareAmount.mul(pool.totalBorrows).divCeil(pool.totalBorrowShares);
   }
 
   /**

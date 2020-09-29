@@ -875,7 +875,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     // 3. transfer payback tokens to the pool
     uint256 balanceBefore = _token.balanceOf(address(this));
     _token.safeTransferFrom(msg.sender, address(this), paybackAmount);
-    uint256 actualPaybackAmount = _token.balanceOf(address(this));
+    uint256 actualPaybackAmount = _token.balanceOf(address(this)).sub(balanceBefore);
 
     // 4. update pool state
     pool.totalBorrows = pool.totalBorrows.sub(actualPaybackAmount);

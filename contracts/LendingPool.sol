@@ -637,7 +637,7 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
   function calculateActualLiquidityShare(
     UserPoolData memory _userTokenData,
     uint256 _liquidateShares
-  ) internal view returns (uint256) {
+  ) internal pure returns (uint256) {
     uint256 maxPurchaseShares = _userTokenData.borrowShares.wadMul(CLOSE_FACTOR);
     uint256 liquidateShares = _liquidateShares;
     if (liquidateShares > maxPurchaseShares) {

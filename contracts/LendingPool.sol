@@ -629,6 +629,24 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
   }
 
   /**
+   * @dev calculate actual liquidity share to liquidate
+   * @param _userTokenData the user token data
+   * @param _liquidateShares the liquidate share from liquidator
+   * @return the actual liquidation shares
+   */
+  function calculateActualLiquidityShare(
+    UserPoolData memory _userTokenData,
+    uint256 _liquidateShares
+  ) internal view returns (uint256) {
+    uint256 maxPurchaseShares = _userTokenData.borrowShares.wadMul(CLOSE_FACTOR);
+    uint256 liquidateShares = _liquidateShares;
+    if (liquidateShares > maxPurchaseShares) {
+      liquidateShares = maxPurchaseShares;
+    }
+    return liquidateShares;
+  }
+
+  /**
    * @dev check is the user account is still healthy
    * Traverse a token list to visit all ERC20 token pools then accumulate 3 balance values of the user:
    * -----------------------------
@@ -725,23 +743,25 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     require(pool.status == PoolStatus.ACTIVE, "can't deposit to this pool");
     require(_amount > 0, "deposit amount should more than 0");
 
-    // 1. calculate liquidity share amount
-    uint256 shareAmount = calculateRoundDownLiquidityShareAmount(_token, _amount);
+    // 1. transfer user deposit liquidity to the pool
+    uint256 balanceBefore = _token.balanceOf(address(this));
+    _token.safeTransferFrom(msg.sender, address(this), _amount);
+    uint256 actualAmount = _token.balanceOf(address(this)).sub(balanceBefore);
 
-    // 2. enable use as collateral for the default, if this pool is enabled to use as collateral
+    // 2. calculate liquidity share amount
+    uint256 shareAmount = calculateRoundDownLiquidityShareAmount(_token, actualAmount);
+
+    // 3. enable use as collateral for the default, if this pool is enabled to use as collateral
     bool isAllowToUseAsCollateral = pool.poolConfig.getCollateralPercent() != 0;
     bool isFirstDeposit = pool.alToken.balanceOf(msg.sender) == 0;
     if (isAllowToUseAsCollateral && isFirstDeposit) {
       userData.useAsCollateral = true;
     }
 
-    // 3. mint alToken to user equal to liquidity share amount
+    // 4. mint alToken to user equal to liquidity share amount
     pool.alToken.mint(msg.sender, shareAmount);
 
-    // 4. transfer user deposit liquidity to the pool
-    _token.safeTransferFrom(msg.sender, address(this), _amount);
-
-    emit Deposit(address(_token), msg.sender, shareAmount, _amount);
+    emit Deposit(address(_token), msg.sender, shareAmount, actualAmount);
   }
 
   /**
@@ -846,22 +866,25 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
       paybackShares = userData.borrowShares;
     }
 
-    // 0. Claim alpha token from latest borrow
+    // 1. Claim alpha token from latest borrow
     claimCurrentAlphaReward(_token, msg.sender);
 
-    // 1. calculate round up payback token
+    // 2. calculate round up payback token
     uint256 paybackAmount = calculateRoundUpBorrowAmount(_token, paybackShares);
 
-    // 2. update pool state
-    pool.totalBorrows = pool.totalBorrows.sub(paybackAmount);
+    // 3. transfer payback tokens to the pool
+    uint256 balanceBefore = _token.balanceOf(address(this));
+    _token.safeTransferFrom(msg.sender, address(this), paybackAmount);
+    uint256 actualPaybackAmount = _token.balanceOf(address(this));
+
+    // 4. update pool state
+    pool.totalBorrows = pool.totalBorrows.sub(actualPaybackAmount);
     pool.totalBorrowShares = pool.totalBorrowShares.sub(paybackShares);
 
-    // 3. update user state
+    // 5. update user state
     userData.borrowShares = userData.borrowShares.sub(paybackShares);
 
-    // 4. transfer payback tokens to the pool
-    _token.safeTransferFrom(msg.sender, address(this), paybackAmount);
-    emit Repay(address(_token), msg.sender, paybackShares, paybackAmount);
+    emit Repay(address(_token), msg.sender, paybackShares, actualPaybackAmount);
   }
 
   /**
@@ -989,19 +1012,17 @@ contract LendingPool is Ownable, ILendingPool, IAlphaReceiver, ReentrancyGuard {
     require(userTokenData.borrowShares > 0, "user didn't borrow this token");
 
     // 5. calculate liquidate amount and shares
-    uint256 maxPurchaseShares = userTokenData.borrowShares.wadMul(CLOSE_FACTOR);
-    uint256 liquidateShares = _liquidateShares;
-    if (liquidateShares > maxPurchaseShares) {
-      liquidateShares = maxPurchaseShares;
-    }
+    uint256 liquidateShares = calculateActualLiquidityShare(userTokenData, _liquidateShares);
     uint256 liquidateAmount = calculateRoundUpBorrowAmount(_token, liquidateShares);
+
+    // 7. transfer liquidate amount to the pool
+    uint256 balanceBefore = _token.balanceOf(address(this));
+    _token.safeTransferFrom(msg.sender, address(this), liquidateAmount);
+    liquidateAmount = _token.balanceOf(address(this)).sub(balanceBefore);
 
     // 6. calculate collateral amount and shares
     uint256 collateralAmount = calculateCollateralAmount(_token, liquidateAmount, _collateral);
     uint256 collateralShares = calculateRoundUpLiquidityShareAmount(_collateral, collateralAmount);
-
-    // 7. transfer liquidate amount to the pool
-    _token.safeTransferFrom(msg.sender, address(this), liquidateAmount);
 
     // 8. burn al token of user equal to collateral shares
     require(

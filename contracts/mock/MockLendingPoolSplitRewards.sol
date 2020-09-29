@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../AlTokenDeployer.sol";
 import "../LendingPool.sol";
 
-contract MockLendingPoolLight is LendingPool {
+contract MockLendingPoolSplitRewards is LendingPool {
 
   constructor(AlTokenDeployer _alTokenDeployer) public LendingPool(_alTokenDeployer) {}
 
@@ -38,10 +38,11 @@ contract MockLendingPoolLight is LendingPool {
     pool.poolReserves = _amount;
   }
 
-
-  function giveAlphaToAlToken(ERC20 _token, uint256 _amount) external {
-    Pool storage pool = pools[address(_token)];
-    distributor.alphaToken().approve(address(pool.alToken), _amount);
-    pool.alToken.receiveAlpha(_amount);
+  function splitRewardExternal(ERC20 _token, uint256 _amount)
+  external
+  view
+  returns (uint256 lendersGain, uint256 borrowersGain)
+  {
+    return splitReward(_token, _amount);
   }
 }

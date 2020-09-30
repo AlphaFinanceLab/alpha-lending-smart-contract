@@ -115,12 +115,4 @@ contract MockLendingPool is LendingPool {
   }
 
   function callAction(ERC20 _token) external updatePoolWithInterestsAndTimestamp(_token) {}
-
-  function splitRewardExternal(ERC20 _token, uint256 _amount)
-    external
-    view
-    returns (uint256 lendersGain, uint256 borrowersGain)
-  {
-    return splitReward(_token, _amount);
-  }
 }

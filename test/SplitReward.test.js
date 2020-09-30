@@ -1,5 +1,5 @@
 const AlTokenDeployer = artifacts.require("./AlTokenDeployer.sol");
-const MockLendingPool = artifacts.require("./MockLendingPool.sol");
+const MockLendingPoolLight = artifacts.require("./MockLendingPoolLight.sol");
 const DefaultPoolConfiguration = artifacts.require("./DefaultPoolConfiguration.sol");
 const DAIPoolConfiguration = artifacts.require("./mock/DaiPoolConfiguration.sol");
 const BNBToken = artifacts.require("./mock/BNBToken.sol");
@@ -10,7 +10,7 @@ const {WAD} = require("./helper.js");
 const {expect, assert} = require("chai");
 chai.use(require("chai-bignumber")(BigNumber));
 
-contract("MockLendingPool", (accounts) => {
+contract("Split Reward", (accounts) => {
   const [creator, alice, bob] = accounts;
 
   const BASE_BORROW_RATE = BigNumber(0.1).times(WAD); // 10%
@@ -28,7 +28,7 @@ contract("MockLendingPool", (accounts) => {
 
   beforeEach(async () => {
     alTokenDeployer = await AlTokenDeployer.new();
-    lendingInstance = await MockLendingPool.new(alTokenDeployer.address);
+    lendingInstance = await MockLendingPoolLight.new(alTokenDeployer.address);
 
     // 80% optimal utilization rate
     const bnbPoolConfigInstance = await DefaultPoolConfiguration.new(

@@ -27,7 +27,7 @@ contract MockLendingPool is LendingPool {
     uint256 _borrowShares
   ) external {
     UserPoolData storage userData = userPoolData[_user][address(_token)];
-    userData.useAsCollateral = _useAsCollateral;
+    userData.disableUseAsCollateral = !_useAsCollateral;
     userData.borrowShares = _borrowShares;
   }
 

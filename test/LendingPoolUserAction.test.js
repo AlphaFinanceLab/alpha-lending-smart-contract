@@ -182,7 +182,7 @@ contract("MockLendingPool", (accounts) => {
       BigNumber(0),
       "Invalid user borrow share"
     );
-    assert.equal(true, userPool.useAsCollateral);
+    assert.equal(false, userPool.disableUseAsCollateral);
 
     // check user alToken balance
     const userAlTokenBalanceAfter = await alBNBToken.balanceOf(alice);
@@ -301,7 +301,7 @@ contract("MockLendingPool", (accounts) => {
       BigNumber(0),
       "Invalid user borrow shares"
     );
-    assert.equal(true, userPool.useAsCollateral);
+    assert.equal(false, userPool.disableUseAsCollateral);
 
     // check user alToken balance
     const poolTotalLiquidity = pools.BNB.totalAvailableLiquidity.plus(pools.BNB.totalBorrows);
@@ -513,7 +513,7 @@ contract("MockLendingPool", (accounts) => {
       BigNumber(userData.BNB.borrowShares.plus(expectedUserBorrowShare)),
       "Invalid user borrow shares"
     );
-    assert.equal(true, userPoolAfter.useAsCollateral);
+    assert.equal(false, userPoolAfter.disableUseAsCollateral);
 
     // check pool's bnb token balance
     const poolBalanceAfter = await bnbToken.balanceOf(lendingInstance.address);
@@ -681,7 +681,7 @@ contract("MockLendingPool", (accounts) => {
       BigNumber(userData.BNB.borrowShares.plus(expectedUserBorrowShare)),
       "Invalid user borrow shares"
     );
-    assert.equal(true, userPoolAfter.useAsCollateral);
+    assert.equal(false, userPoolAfter.disableUseAsCollateral);
 
     // check pool's bnb token balance
     const poolBalanceAfter = await bnbToken.balanceOf(lendingInstance.address);
@@ -808,7 +808,7 @@ contract("MockLendingPool", (accounts) => {
       BigNumber(userData.BNB.borrowShares),
       "Invalid user borrow shares"
     );
-    assert.equal(true, userPoolAfter.useAsCollateral);
+    assert.equal(false, userPoolAfter.disableUseAsCollateral);
 
     // check pool's bnb token balance
     const poolBalanceAfter = await bnbToken.balanceOf(lendingInstance.address);

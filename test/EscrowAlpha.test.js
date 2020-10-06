@@ -21,10 +21,6 @@ contract.only("EscrowAlpha", ([creator, alice, bob]) => {
     await this.alphaToken.approve(this.escrow.address, "100");
     await this.escrow.accumulateAlphaToUser(alice, "100");
 
-    // Alice got 100 Alpha
-    await this.alphaToken.approve(this.escrow.address, "100");
-    await this.escrow.accumulateAlphaToUser(alice, "100");
-
     // Bob got 100 Alpha
     await this.alphaToken.approve(this.escrow.address, "100");
     await this.escrow.accumulateAlphaToUser(bob, "100");

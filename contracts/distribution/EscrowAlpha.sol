@@ -39,12 +39,12 @@ contract EscrowAlpha is IVestingAlpha, Ownable, ReentrancyGuard {
   mapping(address => uint256) public shares;
   // total share of all users
   uint256 public totalShare;
-  // reward withdraw penalty distributed to other token vesters.
-  uint256 public withdrawPremium;
+  // 1e18 - reward withdraw penalty distributed to other token vesters.
+  uint256 public withdrawPortion;
 
-  constructor(AlphaToken _alphaToken, uint256 _withdrawPremium) public {
+  constructor(AlphaToken _alphaToken, uint256 _withdrawPortion) public {
     alphaToken = _alphaToken;
-    withdrawPremium = _withdrawPremium;
+    withdrawPortion = _withdrawPortion;
   }
 
   /**
@@ -62,12 +62,12 @@ contract EscrowAlpha is IVestingAlpha, Ownable, ReentrancyGuard {
   }
 
   /**
-   * @dev claim Alpha token by burning shares (need to pay withdraw premium)
+   * @dev claim Alpha token by burning shares (get less because of withdraw premium)
    * @param _share the number of shares to burn and claim Alpha
    */
   function claim(uint256 _share) external nonReentrant {
     uint256 supply = alphaToken.balanceOf(address(this));
-    uint256 amount = _share.mul(supply).div(totalShare).mul(withdrawPremium).div(1e18);
+    uint256 amount = _share.mul(supply).div(totalShare).mul(withdrawPortion).div(1e18);
     shares[msg.sender] = shares[msg.sender].sub(_share);
     totalShare = totalShare.sub(_share);
     alphaToken.transfer(msg.sender, amount);
@@ -83,10 +83,10 @@ contract EscrowAlpha is IVestingAlpha, Ownable, ReentrancyGuard {
   }
 
   /**
-   * @dev update withdraw premium parameter
-   * @param _withdrawPremium the new withdraw premium parameter
+   * @dev update withdraw portion parameter
+   * @param _withdrawPortion the new withdraw portion parameter
    */
-  function setWithdrawPremium(uint256 _withdrawPremium) external onlyOwner {
-    withdrawPremium = _withdrawPremium;
+  function setwithdrawPortion(uint256 _withdrawPortion) external onlyOwner {
+    withdrawPortion = _withdrawPortion;
   }
 }

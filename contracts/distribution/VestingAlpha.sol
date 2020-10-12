@@ -75,7 +75,7 @@ contract VestingAlpha is IVestingAlpha, ReentrancyGuard {
   /**
    * @dev create receipt for caller
    */
-  function createReceipt() external override nonReentrant returns (uint256) {
+  function createReceipt() external nonReentrant returns (uint256) {
     uint256 amount = userAccumulatedAlpha[msg.sender];
     require(amount > 0, "User don't have accumulate Alpha to create receipt");
     receipts.push(
@@ -90,7 +90,7 @@ contract VestingAlpha is IVestingAlpha, ReentrancyGuard {
    * @dev claim receipt by receipt ID
    * @param _receiptID the ID of the receipt to claim
    */
-  function claim(uint256 _receiptID) external override nonReentrant {
+  function claim(uint256 _receiptID) external nonReentrant {
     require(_receiptID < receipts.length, "Receipt ID not found");
     Receipt storage receipt = receipts[_receiptID];
     require(receipt.claimedAmount < receipt.amount, "This receipt has been claimed all tokens");

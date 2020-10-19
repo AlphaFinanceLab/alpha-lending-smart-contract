@@ -11,5 +11,5 @@ Once lenders supply assets into the protocol, these assets act as collateral, en
 🌎 Website: https://alphafinance.io/</br>
 🐦 Twitter: https://twitter.com/alphafinancelab</br>
 📖 Blog: https://blog.alphafinance.io/</br>
-📢 Telegram announcement channel: https://t.me/AlphaAnnouncement</br>
+📢 Telegram: https://t.me/AlphaFinanceLab</br>
 👋 Discord: https://discord.gg/Z2vuKDT
